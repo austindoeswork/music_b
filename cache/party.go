@@ -1,6 +1,10 @@
 package cache
 
-import "github.com/wardn/uuid"
+import (
+	"strings"
+
+	"github.com/wardn/uuid"
+)
 
 type Party struct {
 	originalName string
@@ -27,7 +31,7 @@ func (p *Party) PrependSong(songName, requester string) error {
 func (p *Party) GetSongList() []string {
 	var songList []string
 	for _, song := range p.songs {
-		songList = append(songList, song.Name)
+		songList = append(songList, getInitials(song.Requester)+" - "+song.Name)
 	}
 	return songList
 }
@@ -49,4 +53,27 @@ func newSong(name, requester string) *song {
 		requester,
 		name,
 	}
+}
+
+//helpers
+
+func getInitials(fullName string) string {
+	names := strings.Split(fullName, " ")
+	if len(names) <= 0 {
+		return "??"
+	}
+
+	var first string
+	if len(names[0]) <= 0 {
+		first = "?"
+	} else {
+		first = string(names[0][0])
+	}
+	var last string
+	if len(names[len(names)-1]) <= 0 {
+		last = "?"
+	} else {
+		last = string(names[len(names)-1][0])
+	}
+	return first + last
 }

@@ -29,7 +29,7 @@ func main() {
 	c := cache.New()
 
 	//make test party
-	pID, err := c.MakeParty("")
+	pID, err := c.MakeParty("Sausage Fest")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -47,6 +47,7 @@ func main() {
 		select {
 		case msg := <-fb_c:
 			fmt.Println(msg.Fulltext())
+			go easterEggs(msg)
 			r.Route(msg)
 		}
 	}
@@ -61,6 +62,6 @@ func addRoutes(r *router.Router, c *cache.Cache) {
 	r.AddRoute(".play", handler.NewAddSongHandler(c))
 }
 
-func easterEggs(msg *listener.Message) {
+func easterEggs(msg listener.Message) {
 
 }

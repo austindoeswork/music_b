@@ -115,24 +115,24 @@ func (h *StatusHandler) Handle(msg listener.Message) {
 		return
 	}
 
-	response := "PartyName: " + partyName + "\n"
-
 	songs, err := h.c.GetSongList(partyName)
 	if err != nil {
 		fmt.Println("4489eeed-f4d5-4ed5-9e9a-3a0d4897cdf1")
 	}
 
+	response := ""
+
 	if msg.HasFlag("-q") {
 		if len(songs) == 0 {
 			response += "no songs in queue"
 		} else {
-			response += "Queue: \n" + strings.Join(songs, "\n")
+			response += partyName + ": \n" + strings.Join(songs, "\n")
 		}
 	} else {
 		if len(songs) == 0 {
 			response += "nothing's playing dawg"
 		} else {
-			response += "now playing:\n" + songs[0]
+			response += "Now playing: \n" + songs[0]
 		}
 	}
 

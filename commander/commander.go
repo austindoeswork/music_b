@@ -37,7 +37,7 @@ func (p *Player) listenWS() {
 		p.conn.Close()
 	}()
 	for {
-		mt, msg, err := p.conn.ReadMessage()
+		_, msg, err := p.conn.ReadMessage()
 		if err != nil {
 			log.Println("error reading ws msg (" + p.party + ")")
 			break
@@ -58,10 +58,10 @@ func (p *Player) listenWS() {
 
 				if err != nil {
 					p.party = encodedName
-					p.respond("res", "HIJACKING")
+					p.respond("join", "HIJACKING")
 				} else {
 					p.party = encodedName
-					p.respond("res", partyName)
+					p.respond("join", partyName)
 				}
 				err = p.c.AddPlayer(encodedName, p.id)
 				if err != nil {
@@ -69,58 +69,36 @@ func (p *Player) listenWS() {
 				}
 				continue
 			} else {
-				p.respond("res", "FAIL")
+				p.respond("join", "FAIL")
 				continue
 			}
 		case "get":
 			songs, err := p.c.GetSongs(p.party, 2)
 			if err != nil {
-				p.respond("res", "FAIL")
+				p.respond("get", "FAIL")
 				continue
 			} else {
-				p.respond("res", songs...)
+				p.respond("get", songs...)
 				continue
 			}
 		case "next":
 			err := p.c.PopSong(p.party)
 			if err != nil {
-				p.respond("res", "FAIL")
+				p.respond("next", "FAIL")
 				continue
 			}
 			songs, err := p.c.GetSongs(p.party, 2)
 			if err != nil {
-				p.respond("res", "FAIL")
+				p.respond("next", "FAIL")
 				continue
 			} else {
-				p.respond("res", songs...)
+				p.respond("next", songs...)
 				continue
 			}
 		default:
 		}
-
-		err = p.conn.WriteMessage(mt, msg)
-		if err != nil {
-			//TODO retry instead of break
-			log.Println("error writing to ws, closing connection (" + p.party + ")")
-			break
-		}
 	}
 }
-
-// func (p *Player) Skip() error {
-// err := p.respond("skip")
-// return err
-// }
-
-// func (p *Player) Pause() error {
-// err := p.respond("pause")
-// return err
-// }
-
-// func (p *Player) Resume() error {
-// err := p.respond("resume")
-// return err
-// }
 
 func (p *Player) respond(cmd string, body ...string) error {
 	res := PlayerCommand{
@@ -152,12 +130,16 @@ func New(c *cache.Cache) *Commander {
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
-	homeTemplate.Execute(w, "ws://"+"austinsland.ottoq.com:8888"+"/echo")
+	homeTemplate.Execute(w, "ws://"+"austinsland.ottoq.com/ws")
 }
 
 func (c *Commander) Listen(port string) {
 	http.HandleFunc("/test", home)
-	http.HandleFunc("/echo", func(w http.ResponseWriter, r *http.Request) {
+
+	fs := http.FileServer(http.Dir("/var/mbwww/"))
+	http.Handle("/", fs)
+
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("ws Request received.")
 		c.serveWS(w, r)
 	})

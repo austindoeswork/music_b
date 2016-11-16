@@ -34,37 +34,37 @@ func New() *Cache {
 
 func (c *Cache) AddPlayer(partyName string, playerID string) error {
 	encodedName := encodeName(partyName)
-	c.mux.Lock()
+	// c.mux.Lock()
 	if _, ok := c.parties[encodedName]; !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return NoPartyError{encodedName}
 	}
 	c.players[encodedName] = playerID
-	c.mux.Unlock()
+	// c.mux.Unlock()
 	return nil
 }
 
 func (c *Cache) DeletePlayer(partyName string) error {
 	encodedName := encodeName(partyName)
-	c.mux.Lock()
+	// c.mux.Lock()
 	if _, ok := c.players[encodedName]; !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return NoPartyError{encodedName}
 	}
 	delete(c.players, encodedName)
-	c.mux.Unlock()
+	// c.mux.Unlock()
 	return nil
 }
 
 func (c *Cache) GetPlayer(partyName string) (string, error) {
 	encodedName := encodeName(partyName)
-	c.mux.Lock()
+	// c.mux.Lock()
 	if _, ok := c.players[encodedName]; !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return "", NoPartyError{encodedName}
 	}
 	playerID := c.players[encodedName]
-	c.mux.Unlock()
+	// c.mux.Unlock()
 	return playerID, nil
 }
 
@@ -87,9 +87,9 @@ func (c *Cache) MakeParty(partyName string) (string, error) {
 		return "", PartyExistsError{encodedName}
 	}
 
-	c.mux.Lock()
+	// c.mux.Lock()
 	c.parties[encodedName] = NewParty(partyName, encodedName)
-	c.mux.Unlock()
+	// c.mux.Unlock()
 
 	return partyName, nil
 }
@@ -97,9 +97,9 @@ func (c *Cache) MakeParty(partyName string) (string, error) {
 //TODO somehow send msg to connected threads
 func (c *Cache) EndParty(partyName string) error {
 	encodedName := encodeName(partyName)
-	c.mux.Lock()
+	// c.mux.Lock()
 	if _, ok := c.parties[encodedName]; !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return NoPartyError{encodedName}
 	}
 	delete(c.parties, encodedName)
@@ -115,24 +115,24 @@ func (c *Cache) EndParty(partyName string) error {
 	for _, thread := range toDelete {
 		delete(c.threads, thread)
 	}
-	c.mux.Unlock()
+	// c.mux.Unlock()
 	return nil
 }
 
 func (c *Cache) JoinParty(partyName, threadID string) error {
 	encodedName := encodeName(partyName)
-	c.mux.Lock()
+	// c.mux.Lock()
 	if _, ok := c.parties[encodedName]; !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return NoPartyError{encodedName}
 	}
 	c.threads[threadID] = encodedName
-	c.mux.Unlock()
+	// c.mux.Unlock()
 	return nil
 }
 
 func (c *Cache) AddSong(songID, path, title string, len time.Duration, requester string) error {
-	c.mux.Lock()
+	// c.mux.Lock()
 	s := &Song{
 		path,
 		title,
@@ -141,42 +141,42 @@ func (c *Cache) AddSong(songID, path, title string, len time.Duration, requester
 		requester,
 	}
 	c.songs[songID] = s
-	c.mux.Unlock()
+	// c.mux.Unlock()
 	return nil
 }
 
 func (c *Cache) GetSong(songID string) (*Song, error) {
-	c.mux.Lock()
+	// c.mux.Lock()
 	if _, ok := c.songs[songID]; !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return nil, NoSongError{songID}
 	}
 	s := c.songs[songID]
-	c.mux.Unlock()
+	// c.mux.Unlock()
 	return s, nil
 }
 
 func (c *Cache) PopSong(partyName string) error {
 	encodedName := encodeName(partyName)
-	c.mux.Lock()
+	// c.mux.Lock()
 	if _, ok := c.parties[encodedName]; !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return NoPartyError{encodedName}
 	}
 	c.parties[encodedName].PopSong()
-	c.mux.Unlock()
+	// c.mux.Unlock()
 	return nil
 }
 
 func (c *Cache) DeleteSong(partyName, songID string) error {
 	encodedName := encodeName(partyName)
-	c.mux.Lock()
+	// c.mux.Lock()
 	if _, ok := c.parties[encodedName]; !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return NoPartyError{encodedName}
 	}
 	c.parties[encodedName].RemoveSongByID(songID)
-	c.mux.Unlock()
+	// c.mux.Unlock()
 	return nil
 }
 
@@ -206,14 +206,14 @@ func (c *Cache) DeleteSong(partyName, songID string) error {
 
 func (c *Cache) AppendSong(partyName, requester, song string) error {
 	encodedName := encodeName(partyName)
-	c.mux.Lock()
+	// c.mux.Lock()
 	if _, ok := c.parties[encodedName]; !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return NoPartyError{encodedName}
 	}
 
 	err := c.parties[encodedName].AppendSong(song)
-	c.mux.Unlock()
+	// c.mux.Unlock()
 
 	return err
 }
@@ -233,44 +233,44 @@ func (c *Cache) AppendSong(partyName, requester, song string) error {
 // }
 
 func (c *Cache) ThreadToPartyID(threadID string) (string, error) {
-	c.mux.Lock()
+	// c.mux.Lock()
 	partyID, ok := c.threads[threadID]
 	if !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return "", NoThreadError{threadID}
 	}
-	c.mux.Unlock()
+	// c.mux.Unlock()
 	return partyID, nil
 }
 
 func (c *Cache) ThreadToPartyName(threadID string) (string, error) {
-	c.mux.Lock()
+	// c.mux.Lock()
 	encodedName, ok := c.threads[threadID]
 	if !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return "", NoThreadError{threadID}
 	}
 	partyName := c.parties[encodedName].OriginalName()
-	c.mux.Unlock()
+	// c.mux.Unlock()
 	return partyName, nil
 }
 
 func (c *Cache) GetParties() []string {
 	var pList []string
-	c.mux.Lock()
+	// c.mux.Lock()
 	for _, p := range c.parties {
 		pList = append(pList, p.OriginalName())
 	}
-	c.mux.Unlock()
+	// c.mux.Unlock()
 	return pList
 }
 
 func (c *Cache) GetSongList(partyName string) ([]string, error) {
 	songs := []string{}
 	encodedName := encodeName(partyName)
-	c.mux.Lock()
+	// c.mux.Lock()
 	if _, ok := c.parties[encodedName]; !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return nil, NoPartyError{encodedName}
 	}
 
@@ -279,16 +279,16 @@ func (c *Cache) GetSongList(partyName string) ([]string, error) {
 		//TODO add checking here
 		songs = append(songs, c.songs[song].Title())
 	}
-	c.mux.Unlock()
+	// c.mux.Unlock()
 
 	return songs, nil
 }
 
 func (c *Cache) GetSongs(partyName string, count int) ([]string, error) {
 	encodedName := encodeName(partyName)
-	c.mux.Lock()
+	// c.mux.Lock()
 	if _, ok := c.parties[encodedName]; !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return nil, NoPartyError{encodedName}
 	}
 
@@ -296,21 +296,21 @@ func (c *Cache) GetSongs(partyName string, count int) ([]string, error) {
 	if len(songs) >= count {
 		songs = songs[:count]
 	}
-	c.mux.Unlock()
+	// c.mux.Unlock()
 
 	return songs, nil
 }
 
 func (c *Cache) ClearSongs(partyName string) error {
 	encodedName := encodeName(partyName)
-	c.mux.Lock()
+	// c.mux.Lock()
 	if _, ok := c.parties[encodedName]; !ok {
-		c.mux.Unlock()
+		// c.mux.Unlock()
 		return NoPartyError{encodedName}
 	}
 
 	err := c.parties[encodedName].ClearSongs()
-	c.mux.Unlock()
+	// c.mux.Unlock()
 
 	return err
 }

@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"fmt"
+	// "fmt"
 	"math/rand"
 	"regexp"
 	"strconv"

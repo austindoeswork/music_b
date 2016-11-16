@@ -21,6 +21,9 @@ var (
 	fbpass        = os.Getenv("FBPASS")
 
 	audioDirFlag = flag.String("audioDir", "/Users/austin/Music/Illegal/", "path to audioDir")
+	//TODO use a config
+	comFlag = flag.String("com", ":80", "port for com")
+	serFlag = flag.String("server", ":6969", "port for music server")
 )
 
 func main() {
@@ -45,14 +48,14 @@ func main() {
 
 	//commander
 	com := commander.New(c)
-	go com.Listen(":8888")
+	go com.Listen(*comFlag)
 
 	//downloader
 	ytd := downloader.NewYTDownloader(*audioDirFlag)
 
 	//server
 	serv := server.New(c)
-	go serv.Start(":6969")
+	go serv.Start(*serFlag)
 
 	//router
 	r := router.NewMessageRouter()

@@ -217,7 +217,7 @@ var homeTemplate = template.Must(template.New("").Parse(`
 		border: 1px dashed black;
 	}
 </style>
-<script>  
+<script>
 window.addEventListener("load", function(evt) {
     var output = document.getElementById("output");
     var input = document.getElementById("input");
@@ -301,4 +301,7 @@ todo
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }

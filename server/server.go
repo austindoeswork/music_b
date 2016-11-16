@@ -3,7 +3,6 @@ package server
 import (
 	"fmt"
 	"net/http"
-	// "os"
 
 	"github.com/austindoeswork/music_b/cache"
 )
@@ -25,13 +24,13 @@ func (s *Server) serveSong(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("no such song"))
 		return
 	}
-	fmt.Println(song.Path())
-
+	fmt.Println("SERVER: serving " + song.Path())
 	http.ServeFile(w, r, song.Path())
 }
 
-func (s *Server) Start() {
+func (s *Server) Start(port string) {
 	f := s.serveSong
 	http.HandleFunc("/song/", f)
-	http.ListenAndServe(":8080", nil)
+	fmt.Println("SERVER: started @ " + port)
+	http.ListenAndServe(port, nil)
 }

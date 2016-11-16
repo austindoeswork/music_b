@@ -1,112 +1,201 @@
 package commander
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
-	"log"
-	// "html"
 	"html/template"
+	"log"
 	"net/http"
-	// "html"
-	// "net/http"
-	// "golang.org/x/net/websocket"
-	//TODO vendor gorilla
-	// or maybe switch to golang.org? idk
+
+	"github.com/austindoeswork/music_b/cache"
 	"github.com/gorilla/websocket"
+	"github.com/wardn/uuid"
 )
 
-// play(party)
-// pause(party)
+//TODO make this not a fucking switch case!!!!!!
+//TODO better err handling
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
+//TODO better implementation for this
 
-// Player holds the connection with the audio player
 type Player struct {
-	//maybe keep this info in the cache
-	party string //how to populate (or do we need to?)
+	c     *cache.Cache
+	id    string
+	party string
 	conn  *websocket.Conn
 }
 
+type PlayerCommand struct {
+	Command string
+	Body    []string
+}
+
+// { "Command": "asdfasdf", "Body":["asdfasdf asdd"]}
 func (p *Player) listenWS() {
 	defer func() {
+		p.c.EndParty(p.party)
 		p.conn.Close()
 	}()
 	for {
-		//pause
-		//join
-		//ok ? TODO figure this out (ack, sync)
-		//status ?
-		//getsongs
-		//deletesong
-		//
 		mt, msg, err := p.conn.ReadMessage()
 		if err != nil {
-			log.Println("read:", err)
+			log.Println("error reading ws msg (" + p.party + ")")
 			break
 		}
-		log.Printf("recv: %s", msg)
+		var cmd PlayerCommand
+		err = json.Unmarshal(msg, &cmd)
+		if err != nil {
+			log.Println("error unmarshalling command (" + p.party + ")")
+			continue
+		}
+		fmt.Println("ws: (" + p.party + ") " + cmd.Command)
+		switch cmd.Command {
+		case "join":
+			if len(cmd.Body) > 0 {
+				partyName := cmd.Body[0]
+				encodedName := p.c.GetEncodedName(partyName)
+				_, err := p.c.MakeParty(partyName)
+
+				if err != nil {
+					p.party = encodedName
+					p.respond("res", "HIJACKING")
+				} else {
+					p.party = encodedName
+					p.respond("res", partyName)
+				}
+				err = p.c.AddPlayer(encodedName, p.id)
+				if err != nil {
+					log.Println("error adding player to cache")
+				}
+				continue
+			} else {
+				p.respond("res", "FAIL")
+				continue
+			}
+		case "get":
+			songs, err := p.c.GetSongs(p.party, 2)
+			if err != nil {
+				p.respond("res", "FAIL")
+				continue
+			} else {
+				p.respond("res", songs...)
+				continue
+			}
+		case "next":
+			err := p.c.PopSong(p.party)
+			if err != nil {
+				p.respond("res", "FAIL")
+				continue
+			}
+			songs, err := p.c.GetSongs(p.party, 2)
+			if err != nil {
+				p.respond("res", "FAIL")
+				continue
+			} else {
+				p.respond("res", songs...)
+				continue
+			}
+		default:
+		}
+
 		err = p.conn.WriteMessage(mt, msg)
 		if err != nil {
-			log.Println("write:", err)
+			//TODO retry instead of break
+			log.Println("error writing to ws, closing connection (" + p.party + ")")
 			break
 		}
 	}
 }
 
-type Commander struct {
+// func (p *Player) Skip() error {
+// err := p.respond("skip")
+// return err
+// }
+
+// func (p *Player) Pause() error {
+// err := p.respond("pause")
+// return err
+// }
+
+// func (p *Player) Resume() error {
+// err := p.respond("resume")
+// return err
+// }
+
+func (p *Player) respond(cmd string, body ...string) error {
+	res := PlayerCommand{
+		cmd,
+		body,
+	}
+	err := p.conn.WriteJSON(res)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func New() *Commander {
-	return &Commander{}
+func (p *Player) command(cmd PlayerCommand) error {
+	err := p.conn.WriteJSON(cmd)
+	return err
+}
+
+type Commander struct {
+	c       *cache.Cache
+	players map[string]*Player
+}
+
+func New(c *cache.Cache) *Commander {
+	return &Commander{
+		c,
+		map[string]*Player{},
+	}
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
 	homeTemplate.Execute(w, "ws://"+"austinsland.ottoq.com:8888"+"/echo")
 }
 
-func (c *Commander) Listen() {
+func (c *Commander) Listen(port string) {
 	http.HandleFunc("/test", home)
 	http.HandleFunc("/echo", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("ws Request received.")
-		serveWS(w, r)
+		c.serveWS(w, r)
 	})
 
-	fmt.Println("starting commander.")
-	err := http.ListenAndServe(":8888", nil)
+	fmt.Println("Started commander @ " + port)
+	err := http.ListenAndServe(port, nil)
 	if err != nil {
-		panic("Commander: " + err.Error())
+		log.Panic("Commander: " + err.Error())
 	}
 }
 
-func serveWS(w http.ResponseWriter, r *http.Request) {
+func (c *Commander) serveWS(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		panic("Commander: " + err.Error())
+		log.Panic("Commander: " + err.Error())
 	}
-	p := &Player{conn: conn}
+	playerID := uuid.New()
+
+	p := &Player{
+		c.c,
+		playerID,
+		"",
+		conn,
+	}
+	c.players[playerID] = p
 	p.listenWS()
+
+	fmt.Println("serve ws ended")
+	delete(c.players, playerID)
 }
 
-// type PStream struct {
-// }
-
-// type WSHandler func(*Conn)
-
-// func checkOrigin(config *Config, req *http.Request) (err error) {
-// config.Origin, err = Origin(config, req)
-// if err == nil && config.Origin == nil {
-// return fmt.Errorf("null origin")
-// }
-// return err
-// }
-
-// // ServeHTTP implements the http.Handler interface for a WebSocket
-// func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-// s := Server{Handler: h, Handshake: checkOrigin}
-// s.serveWebSocket(w, req)
-// }
+func (c *Commander) Command(playerID string, cmd PlayerCommand) error {
+	if _, ok := c.players[playerID]; !ok {
+		return errors.New("No such player:" + playerID)
+	}
+	err := c.players[playerID].command(cmd)
+	return err
+}
 
 // party --
 // 		   \
@@ -194,7 +283,8 @@ window.addEventListener("load", function(evt) {
 <form>
 	<button id="open">Open</button>
 	<button id="close">Close</button>
-	<p><input id="input" type="text" value=".fuckjon">
+	<p><input id="input" type="text" value=".fuckjon"></p>
+	<p>
 	<button id="send">Send</button>
 	<button id="clear">Clear</button>
 </form>
@@ -207,3 +297,8 @@ todo
 </body>
 </html>
 `))
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}

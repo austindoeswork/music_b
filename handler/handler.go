@@ -1,10 +1,12 @@
 package handler
 
 import (
+	// "errors"
 	"fmt"
 	"strings"
 
 	"github.com/austindoeswork/music_b/cache"
+	"github.com/austindoeswork/music_b/commander"
 	"github.com/austindoeswork/music_b/downloader"
 	"github.com/austindoeswork/music_b/listener"
 )
@@ -30,6 +32,14 @@ func NewAddSongHandler(c *cache.Cache, d *downloader.YTDownloader) *AddSongHandl
 }
 func NewStatusHandler(c *cache.Cache) *StatusHandler {
 	return &StatusHandler{c}
+}
+func NewClearHandler(c *cache.Cache) *ClearHandler {
+	return &ClearHandler{c}
+}
+
+//TODO add commander object here when it's no longer global
+func NewSkipHandler(c *cache.Cache, com *commander.Commander) *SkipHandler {
+	return &SkipHandler{c, com}
 }
 
 //IMPLEMENTATIONS =============================================================
@@ -151,12 +161,6 @@ func (h *StatusHandler) Handle(msg listener.Message) {
 		} else {
 			response += partyName + ": \n" + strings.Join(songs, "\n")
 		}
-	} else if msg.HasFlag("-j") {
-		songs_j, err := h.c.GetSongsJson(partyName)
-		if err != nil {
-			fmt.Println("1a351459-5533-4e8f-99f1-4514c8022739")
-		}
-		response += string(songs_j)
 	} else {
 		if len(songs) == 0 {
 			response += "nothing's playing dawg"
@@ -169,6 +173,57 @@ func (h *StatusHandler) Handle(msg listener.Message) {
 	return
 }
 
+//CLEAR ====================
+type ClearHandler struct {
+	c *cache.Cache
+}
+
+func (h *ClearHandler) Handle(msg listener.Message) {
+	partyID, err := h.c.ThreadToPartyID(msg.ThreadID())
+	if err != nil {
+		msg.Respond("please join a party bb <3")
+		return
+	}
+
+	err = h.c.ClearSongs(partyID)
+	if err != nil {
+		msg.Respond("can't clear :(")
+	}
+	msg.Respond("get fucked.")
+	return
+}
+
+//SKIP =====================
+type SkipHandler struct {
+	c   *cache.Cache
+	com *commander.Commander
+}
+
+func (h *SkipHandler) Handle(msg listener.Message) {
+	partyID, err := h.c.ThreadToPartyID(msg.ThreadID())
+	if err != nil {
+		msg.Respond("please join a party bb <3")
+		return
+	}
+
+	playerID, err := h.c.GetPlayer(partyID)
+	if err != nil {
+		msg.Respond("cache has no player for that party")
+		return
+	}
+	cmd := commander.PlayerCommand{
+		"skip",
+		nil,
+	}
+	err = h.com.Command(playerID, cmd)
+	if err != nil {
+		msg.Respond("cldn't skip song, prob cuz ur a bitch")
+		return
+	}
+	msg.Respond("skippin dat shit")
+	return
+}
+
 const (
 	commandList = `.help: display this list
 .play <song query>:	add a song to queue
@@ -177,10 +232,10 @@ const (
 .status: what's happening?
 	-q queue
 	-j json for some reason
-//.clear: fuck people in the ass
+.clear: fuck people in the ass
+.skip: fuck this song
 //.pause: be that guy who killed the jams
 //.resume: resume paused music
-//.skip: fuck this song
 //.whoami: who the fuck am I
 `
 )

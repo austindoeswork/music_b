@@ -3,33 +3,27 @@ package cache
 import (
 	"encoding/json"
 	"strings"
-
-	"github.com/austindoeswork/music_b/commander"
-	// "github.com/wardn/uuid"
 )
 
 type Party struct {
 	originalName string
-	player       *commander.Player
+	encodedName  string
 	songs        []string
 }
 
-func NewParty(name string) *Party {
+func NewParty(name, encodedName string) *Party {
 	return &Party{
 		name,
-		nil,
+		encodedName,
 		[]string{},
 	}
 }
 
-func (p *Party) SetPlayer(player *commander.Player) {
-	//TODO handle nil
-	//TODO how to handle hijaking?
-	p.player = player
-}
-
-func (p *Party) GetPlayer() *commander.Player {
-	return p.player
+func (p *Party) PopSong() error {
+	if len(p.songs) >= 1 {
+		p.songs = p.songs[1:]
+	}
+	return nil
 }
 
 func (p *Party) RemoveSongByID(songID string) error {
@@ -69,6 +63,10 @@ func (p *Party) GetSongsJson() ([]byte, error) {
 
 func (p *Party) OriginalName() string {
 	return p.originalName
+}
+
+func (p *Party) EncodedName() string {
+	return p.encodedName
 }
 
 //helpers

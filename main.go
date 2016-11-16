@@ -20,7 +20,7 @@ var (
 	fbemail       = os.Getenv("FBEMAIL")
 	fbpass        = os.Getenv("FBPASS")
 
-	audioDirFlag = flag.String("audioDir", "~/Music/Illegal/", "path to audioDir")
+	audioDirFlag = flag.String("audioDir", "/Users/austin/Music/Illegal/", "path to audioDir")
 )
 
 func main() {
@@ -44,20 +44,19 @@ func main() {
 	fmt.Println("Party Created: ", pID)
 
 	//commander
-	com := commander.New()
-	go com.Listen()
+	com := commander.New(c)
+	go com.Listen(":8888")
 
 	//downloader
 	ytd := downloader.NewYTDownloader(*audioDirFlag)
 
 	//server
 	serv := server.New(c)
-	go serv.Start()
-	fmt.Println("music server started.")
+	go serv.Start(":6969")
 
 	//router
 	r := router.NewMessageRouter()
-	addMessageRoutes(r, c, ytd)
+	addMessageRoutes(r, c, ytd, com)
 
 	//pass messages to router
 	for {
@@ -71,12 +70,14 @@ func main() {
 
 }
 
-func addMessageRoutes(r *router.MessageRouter, c *cache.Cache, d *downloader.YTDownloader) {
+func addMessageRoutes(r *router.MessageRouter, c *cache.Cache, d *downloader.YTDownloader, com *commander.Commander) {
 	r.AddRoute(".test", handler.NewTestHandler())
 	r.AddRoute(".help", handler.NewHelpHandler())
+	r.AddRoute(".clear", handler.NewClearHandler(c))
 	r.AddRoute(".join", handler.NewJoinPartyHandler(c))
 	r.AddRoute(".parties", handler.NewGetPartiesHandler(c))
 	r.AddRoute(".status", handler.NewStatusHandler(c))
+	r.AddRoute(".skip", handler.NewSkipHandler(c, com))
 	r.AddRoute(".play", handler.NewAddSongHandler(c, d))
 }
 

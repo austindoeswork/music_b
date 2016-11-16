@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/austindoeswork/music_b/cache"
+	"github.com/austindoeswork/music_b/downloader"
 	"github.com/austindoeswork/music_b/listener"
 )
 
@@ -15,14 +16,17 @@ type Handler interface {
 func NewTestHandler() *TestHandler {
 	return &TestHandler{}
 }
+func NewHelpHandler() *HelpHandler {
+	return &HelpHandler{}
+}
 func NewJoinPartyHandler(c *cache.Cache) *JoinPartyHandler {
 	return &JoinPartyHandler{c}
 }
 func NewGetPartiesHandler(c *cache.Cache) *GetPartiesHandler {
 	return &GetPartiesHandler{c}
 }
-func NewAddSongHandler(c *cache.Cache) *AddSongHandler {
-	return &AddSongHandler{c}
+func NewAddSongHandler(c *cache.Cache, d *downloader.YTDownloader) *AddSongHandler {
+	return &AddSongHandler{c, d}
 }
 func NewStatusHandler(c *cache.Cache) *StatusHandler {
 	return &StatusHandler{c}
@@ -35,7 +39,15 @@ type TestHandler struct {
 }
 
 func (h *TestHandler) Handle(msg listener.Message) {
-	msg.Respond(fmt.Sprintf("usr: %s\ncmd: %s\nres: %s\n", msg.UserName(), msg.Command(), msg.Text()))
+	msg.Respond(fmt.Sprintf("usr: %s\ncmd: %s\nrest: %s\n", msg.UserName(), msg.Command(), msg.Text()))
+}
+
+//HELPHANDLER ====================
+type HelpHandler struct {
+}
+
+func (h *HelpHandler) Handle(msg listener.Message) {
+	msg.Respond(commandList)
 }
 
 //JOINPARTY ====================
@@ -57,6 +69,7 @@ func (h *JoinPartyHandler) Handle(msg listener.Message) {
 //ADDSONG ======================
 type AddSongHandler struct {
 	c *cache.Cache
+	d *downloader.YTDownloader
 }
 
 func (h *AddSongHandler) Handle(msg listener.Message) {
@@ -69,23 +82,33 @@ func (h *AddSongHandler) Handle(msg listener.Message) {
 		msg.Respond("could u plz gimme a whole song name or sumtin")
 		return
 	}
-	if msg.HasFlag("-n") {
-		err := h.c.PrependSong(partyID, msg.UserName(), msg.Text())
+	// if msg.HasFlag("-n") {
+	// err := h.c.PrependSong(partyID, msg.UserName(), msg.Text())
+	// if err != nil {
+	// fmt.Println("bf309eda-51a6-4614-81b2-48e643ac9f9d")
+	// msg.Respond("something went wrong bb :(")
+	// return
+	// }
+	// msg.Respond("prepended.")
+	// return
+	// }
+	go func() {
+		vid, filePath, title, duration, err := h.d.FromQuery(msg.Text())
 		if err != nil {
-			fmt.Println("bf309eda-51a6-4614-81b2-48e643ac9f9d")
-			msg.Respond("something went wrong bb :(")
-			return
+			msg.Respond("error downloading: " + err.Error())
+		} else {
+			h.c.AddSong(vid, filePath, title, duration, msg.UserName())
+			msg.Respond(title + " succesfully stolen.")
+			err := h.c.AppendSong(partyID, msg.UserName(), vid)
+			if err != nil {
+				fmt.Println("f5575f0b-5af0-4a1d-9feb-4f9266fbb3b0")
+				msg.Respond("something went wrong adding song to queue :(")
+				return
+			}
+
 		}
-		msg.Respond("prepended.")
-		return
-	}
-	err = h.c.AppendSong(partyID, msg.UserName(), msg.Text())
-	if err != nil {
-		fmt.Println("f5575f0b-5af0-4a1d-9feb-4f9266fbb3b0")
-		msg.Respond("something went wrong bb :(")
-		return
-	}
-	msg.Respond("appended.")
+	}()
+	msg.Respond("downloading...")
 }
 
 //GETPARTIES ====================
@@ -128,6 +151,12 @@ func (h *StatusHandler) Handle(msg listener.Message) {
 		} else {
 			response += partyName + ": \n" + strings.Join(songs, "\n")
 		}
+	} else if msg.HasFlag("-j") {
+		songs_j, err := h.c.GetSongsJson(partyName)
+		if err != nil {
+			fmt.Println("1a351459-5533-4e8f-99f1-4514c8022739")
+		}
+		response += string(songs_j)
 	} else {
 		if len(songs) == 0 {
 			response += "nothing's playing dawg"
@@ -139,3 +168,19 @@ func (h *StatusHandler) Handle(msg listener.Message) {
 	msg.Respond(response)
 	return
 }
+
+const (
+	commandList = `.help: display this list
+.play <song query>:	add a song to queue
+.parties: list all parties
+.join <party name>: start controlling a party
+.status: what's happening?
+	-q queue
+	-j json for some reason
+//.clear: fuck people in the ass
+//.pause: be that guy who killed the jams
+//.resume: resume paused music
+//.skip: fuck this song
+//.whoami: who the fuck am I
+`
+)

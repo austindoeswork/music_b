@@ -5,21 +5,23 @@ import (
 	"github.com/austindoeswork/music_b/listener"
 )
 
-type Router struct {
+//TODO change to message router
+//TODO add path router
+type MessageRouter struct {
 	routes map[string]handler.Handler
 }
 
-func New() *Router {
-	return &Router{
+func NewMessageRouter() *MessageRouter {
+	return &MessageRouter{
 		make(map[string]handler.Handler),
 	}
 }
 
-func (r *Router) AddRoute(command string, h handler.Handler) {
+func (r *MessageRouter) AddRoute(command string, h handler.Handler) {
 	r.routes[command] = h
 }
 
-func (r *Router) Route(msg listener.Message) {
+func (r *MessageRouter) Route(msg listener.Message) {
 
 	cmd := msg.Command()
 

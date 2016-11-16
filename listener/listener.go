@@ -19,6 +19,7 @@ type Message interface {
 
 type Listener interface {
 	Listen() (chan Message, error)
+	//TODO ListenAndRoute(router) (error)
 	Send(threadID, text string) error
 }
 

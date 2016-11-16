@@ -1,19 +1,22 @@
 package cache
 
 import (
-	"fmt"
+	// "fmt"
 	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/austindoeswork/music_b/commander"
 )
 
 type Cache struct {
 	mux     *sync.Mutex
 	parties map[string]*Party
 	threads map[string]string
+	songs   map[string]*Song
 }
 
 func New() *Cache {
@@ -21,6 +24,7 @@ func New() *Cache {
 		&sync.Mutex{},
 		make(map[string]*Party),
 		make(map[string]string),
+		make(map[string]*Song),
 	}
 }
 
@@ -37,7 +41,6 @@ func (c *Cache) MakeParty(partyName string) (string, error) {
 	}
 
 	if _, ok := c.parties[encodedName]; ok {
-		fmt.Println(ok)
 		return "", PartyExistsError{encodedName}
 	}
 
@@ -60,6 +63,67 @@ func (c *Cache) JoinParty(partyName, threadID string) error {
 	return nil
 }
 
+func (c *Cache) AddSong(songID, path, title string, len time.Duration, requester string) error {
+	c.mux.Lock()
+	s := &Song{
+		path,
+		title,
+		len,
+		time.Now(),
+		requester,
+	}
+	c.songs[songID] = s
+	c.mux.Unlock()
+	return nil
+}
+
+func (c *Cache) GetSong(songID string) (*Song, error) {
+	c.mux.Lock()
+	if _, ok := c.songs[songID]; !ok {
+		c.mux.Unlock()
+		return nil, NoSongError{songID}
+	}
+	s := c.songs[songID]
+	c.mux.Unlock()
+	return s, nil
+}
+
+func (c *Cache) DeleteSong(partyName, songID string) error {
+	encodedName := encodeName(partyName)
+	c.mux.Lock()
+	if _, ok := c.parties[encodedName]; !ok {
+		c.mux.Unlock()
+		return NoPartyError{encodedName}
+	}
+	c.parties[encodedName].RemoveSongByID(songID)
+	c.mux.Unlock()
+	return nil
+}
+
+func (c *Cache) SetPlayer(partyName string, player *commander.Player) error {
+	encodedName := encodeName(partyName)
+	c.mux.Lock()
+	if _, ok := c.parties[encodedName]; !ok {
+		c.mux.Unlock()
+		return NoPartyError{encodedName}
+	}
+	c.parties[encodedName].SetPlayer(player)
+	c.mux.Unlock()
+	return nil
+}
+
+func (c *Cache) GetPlayer(partyName string) (*commander.Player, error) {
+	encodedName := encodeName(partyName)
+	c.mux.Lock()
+	if _, ok := c.parties[encodedName]; !ok {
+		c.mux.Unlock()
+		return nil, NoPartyError{encodedName}
+	}
+	player := c.parties[encodedName].GetPlayer()
+	c.mux.Unlock()
+	return player, nil
+}
+
 func (c *Cache) AppendSong(partyName, requester, song string) error {
 	encodedName := encodeName(partyName)
 	c.mux.Lock()
@@ -68,25 +132,25 @@ func (c *Cache) AppendSong(partyName, requester, song string) error {
 		return NoPartyError{encodedName}
 	}
 
-	err := c.parties[encodedName].AppendSong(song, requester)
+	err := c.parties[encodedName].AppendSong(song)
 	c.mux.Unlock()
 
 	return err
 }
 
-func (c *Cache) PrependSong(partyName, requester, song string) error {
-	encodedName := encodeName(partyName)
-	c.mux.Lock()
-	if _, ok := c.parties[encodedName]; !ok {
-		c.mux.Unlock()
-		return NoPartyError{encodedName}
-	}
+// func (c *Cache) PrependSong(partyName, requester, song string) error {
+// encodedName := encodeName(partyName)
+// c.mux.Lock()
+// if _, ok := c.parties[encodedName]; !ok {
+// c.mux.Unlock()
+// return NoPartyError{encodedName}
+// }
 
-	err := c.parties[encodedName].PrependSong(song, requester)
-	c.mux.Unlock()
+// err := c.parties[encodedName].PrependSong(song, requester)
+// c.mux.Unlock()
 
-	return err
-}
+// return err
+// }
 
 func (c *Cache) ThreadToPartyID(threadID string) (string, error) {
 	c.mux.Lock()
@@ -122,6 +186,7 @@ func (c *Cache) GetParties() []string {
 }
 
 func (c *Cache) GetSongList(partyName string) ([]string, error) {
+	songs := []string{}
 	encodedName := encodeName(partyName)
 	c.mux.Lock()
 	if _, ok := c.parties[encodedName]; !ok {
@@ -130,14 +195,33 @@ func (c *Cache) GetSongList(partyName string) ([]string, error) {
 	}
 
 	songList := c.parties[encodedName].GetSongList()
+	for _, song := range songList {
+		//TODO add checking here
+		songs = append(songs, c.songs[song].Title())
+	}
 	c.mux.Unlock()
 
-	return songList, nil
+	return songs, nil
+}
+
+func (c *Cache) GetSongsJson(partyName string) ([]byte, error) {
+	encodedName := encodeName(partyName)
+	c.mux.Lock()
+	if _, ok := c.parties[encodedName]; !ok {
+		c.mux.Unlock()
+		return nil, NoPartyError{encodedName}
+	}
+
+	songs_j, err := c.parties[encodedName].GetSongsJson()
+	c.mux.Unlock()
+
+	return songs_j, err
 }
 
 //HELPY==========================================================
 
 func genID() string {
+	//TODO seed once yo
 	rand.Seed(int64(time.Now().Nanosecond()))
 	return strconv.Itoa(rand.Intn(8999) + 1000)
 }
@@ -164,6 +248,14 @@ type NoThreadError struct {
 
 func (n NoThreadError) Error() string {
 	return "No such thread: " + n.threadID
+}
+
+type NoSongError struct {
+	songID string
+}
+
+func (n NoSongError) Error() string {
+	return "No such song: " + n.songID
 }
 
 func encodeName(name string) string {

@@ -20,9 +20,18 @@ function checkQueueReady() {
   if (playQueue.length > 0) {
     AudioEndedHandler();
   } else {
+    getQueueLength();
     if (qLength == "0") {
+      var button = document.getElementById("playButton");
+      button.src = "img/sad.png";
+      currentSongname = "No songs in queue :[";
+      OnSongNameChange();
       requestSong();
     } else {
+      var button = document.getElementById("playButton");
+      button.src = "img/elip.png";
+      currentSongname = "buffering, hold your horses";
+      OnSongNameChange();
       nextSong();
     }
     window.setTimeout(checkQueueReady, 1000);
@@ -37,7 +46,6 @@ function AudioEndedHandler() {
 
   if (playQueue.length == 0 ) {
     getQueueLength();
-    console.log(qLength);
     if (qLength == "0") {
       var button = document.getElementById("playButton");
       button.src = "img/sad.png";

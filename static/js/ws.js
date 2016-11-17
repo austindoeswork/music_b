@@ -45,6 +45,15 @@ function createRoom() {
   ws.send(JSON.stringify(msg));
 }
 
+function createRoom() {
+  var msg = {
+    Command: "join",
+    Body: [mbInfo.roomName]
+  };
+
+  ws.send(JSON.stringify(msg));
+}
+
 function getNameFromId(id) {
   var msg = {
     Command: "id",
@@ -82,6 +91,13 @@ function parseResponse(r) {
     } else {
       return "FAIL";
     }
+  } else if (res.Command == "create") {
+    if (res.Body[0] != "FAIL" && res.Body.length != 0) {
+      createSuccess = true;
+      var partyText = "you're in \"" + res.Body[0] + "\"";
+      document.getElementById("partyName").innerHTML = partyText;
+    }
+    return res.Body[0];
   } else if (res.Command == "join") {
     if (res.Body[0] != "FAIL" && res.Body.length != 0) {
       createSuccess = true;

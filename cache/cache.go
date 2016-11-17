@@ -129,12 +129,21 @@ func (c *Cache) JoinParty(partyName, threadID string) error {
 
 func (c *Cache) AddSong(songID, path, title string, len time.Duration, requester string) error {
 	// c.mux.Lock()
+	if song, ok := c.songs[songID]; ok {
+		// c.mux.Unlock()
+		song.Added()
+		return nil
+	}
+
 	s := &Song{
 		path,
 		title,
 		len,
 		time.Now(),
 		requester,
+		1,
+		0,
+		songID,
 	}
 	c.songs[songID] = s
 	// c.mux.Unlock()
@@ -159,12 +168,21 @@ func (c *Cache) PopSong(partyName string) error {
 		// c.mux.Unlock()
 		return NoPartyError{encodedName}
 	}
-	c.parties[encodedName].PopSong()
+	song, _ := c.parties[encodedName].PopSong()
+	c.songs[song].Played()
 	// c.mux.Unlock()
 	return nil
 }
 
-func (c *Cache) DeleteSong(partyName, songID string) error {
+func (c *Cache) DeleteSong(songID string) error {
+	if _, ok := c.songs[songID]; !ok {
+		return NoSongError{songID}
+	}
+	delete(c.songs, songID)
+	return nil
+}
+
+func (c *Cache) DeleteSongFromParty(partyName, songID string) error {
 	encodedName := encodeName(partyName)
 	// c.mux.Lock()
 	if _, ok := c.parties[encodedName]; !ok {
@@ -278,6 +296,15 @@ func (c *Cache) GetSongList(partyName string) ([]string, error) {
 	// c.mux.Unlock()
 
 	return songs, nil
+}
+
+//TODO better naming on these functions
+func (c *Cache) GetAllSongs() ([]*Song, error) {
+	slist := []*Song{}
+	for _, song := range c.songs {
+		slist = append(slist, song)
+	}
+	return slist, nil
 }
 
 func (c *Cache) GetSongs(partyName string, count int) ([]string, error) {

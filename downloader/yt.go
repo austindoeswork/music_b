@@ -46,15 +46,51 @@ func NewYTDownloader(c *cache.Cache, dir string) (*YTDownloader, error) {
 		}
 	}
 
-	return &YTDownloader{
+	downloader := YTDownloader{
 		c,
 		dir,
-	}, nil
+	}
+
+	go func() {
+		ticker := time.NewTimer(time.Minute * 5)
+		for {
+			select {
+			case <-ticker.C:
+				fmt.Println("DOWNLOADER: clean up starting...")
+				err := downloader.Clean()
+				if err != nil {
+					log.Println(err.Error())
+				}
+			}
+		}
+	}()
+
+	return &downloader, nil
 }
 
-// func (d *YTDownloader) Clean() {
-
-// }
+func (d *YTDownloader) Clean() error {
+	songs, err := d.c.GetAllSongs()
+	if err != nil {
+		return err
+	}
+	for _, song := range songs {
+		//TODO also delete old songs
+		if song.AddCount() == song.PlayCount() {
+			err = d.c.DeleteSong(song.ID())
+			if err != nil {
+				fmt.Println("DOWNLOADER: couldn't delete " + song.ID() + " from cache")
+				return err
+			}
+			err = os.Remove(song.Path())
+			if err != nil {
+				fmt.Println("DOWNLOADER: couldn't delete " + song.ID() + " from filesystem")
+				return err
+			}
+			fmt.Println("DOWNLOADER: deleted " + song.Path())
+		}
+	}
+	return nil
+}
 
 //TODO err handling
 //TODO threading and pooling

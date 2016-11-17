@@ -6,4 +6,5 @@ echo "built."
 echo "deploying..."
 scp ./music_b austindoes.work:/home/austin/bin/
 sudo scp -r ./static/* austindoes.work:/var/mbwww/
+rm ./music_b
 echo "donezo."

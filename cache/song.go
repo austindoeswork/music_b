@@ -10,6 +10,9 @@ type Song struct {
 	length     time.Duration
 	lastPlayed time.Time
 	requester  string
+	addCount   int
+	playCount  int
+	id         string
 }
 
 func (s *Song) Path() string {
@@ -29,4 +32,22 @@ func (s *Song) Play() {
 }
 func (s *Song) Requester() string {
 	return s.requester
+}
+func (s *Song) AddCount() int {
+	return s.addCount
+}
+func (s *Song) PlayCount() int {
+	return s.playCount
+}
+func (s *Song) Added() {
+	s.lastPlayed = time.Now()
+	s.addCount++
+	return
+}
+func (s *Song) Played() {
+	s.playCount++
+	return
+}
+func (s *Song) ID() string {
+	return s.id
 }

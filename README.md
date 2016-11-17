@@ -8,11 +8,14 @@ holds important info in memory
 - cache
 	- parties -- associates parties to songs
 	- threads -- associates listener threads to parties
+	- songs -- holds song metadata
 - party
 	- holds info about player and songs
 
 ### commander
-speaks to the frontend
+speaks to the music player thru a websocket
+
+serves the static content
 
 ### downloader
 downloads music from different sources
@@ -28,16 +31,18 @@ sudo chmod a+rx /usr/local/bin/youtube-dl
 ### listener
 listens to peoples commands through fb or otherwise
 
+- Websocket - TODO
+- Facebook - Usain Bott
+- GroupMe ?
+- Txt Msg ?
+
 ### router
 routes messages and paths to respective function calls
 
 ### server
-serves music
+serves music from a directory
 
 ### TODO:
-- downloader
-- music server
-- music cache (auto cleanup)
-- user interface
-- add message handlers
-- add route handlers
+- websocket party controller 
+- nicely show info about controller in play.html
+- proper logging

@@ -20,15 +20,17 @@ func NewParty(name, encodedName string) *Party {
 	}
 }
 
-func (p *Party) PopSong() error {
+func (p *Party) PopSong() (string, error) {
 	if len(p.songs) > 0 {
-		fmt.Println("before: " + strings.Join(p.songs, " "))
+		// fmt.Println("before: " + strings.Join(p.songs, " "))
+		song := p.songs[0]
 		p.songs = p.songs[1:]
-		fmt.Println("after: " + strings.Join(p.songs, " "))
+		return song, nil
+		// fmt.Println("after: " + strings.Join(p.songs, " "))
 	} else {
 		fmt.Println("nothing to pop")
 	}
-	return nil
+	return "", nil
 }
 
 func (p *Party) RemoveSongByID(songID string) error {

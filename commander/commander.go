@@ -121,6 +121,7 @@ func (p *Player) listenWS() {
 				continue
 			}
 			p.respond("length", strconv.Itoa(len(songs)))
+			fmt.Println("(length) sending: " + strconv.Itoa(len(songs)))
 			continue
 		default:
 		}

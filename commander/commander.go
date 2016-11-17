@@ -56,6 +56,10 @@ func (p *Player) listenWS() {
 			fmt.Println("ws: (" + p.party + ") " + cmd.Command + " : " + strings.Join(cmd.Body, " "))
 			if len(cmd.Body) > 0 {
 				partyName := cmd.Body[0]
+				if isInvalidString(partyName) {
+					p.respond("join", "FAIL", "failed to make party")
+					continue
+				}
 				encodedName := p.c.GetEncodedName(partyName)
 				if len(encodedName) < 3 {
 					p.respond("join", "FAIL", "failed to make party")
@@ -352,4 +356,9 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
+}
+
+func isInvalidString(input string) bool {
+	invalidChars := `;<>()"'[]`
+	return strings.ContainsAny(input, invalidChars)
 }

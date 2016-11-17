@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 )
 
@@ -21,4 +22,9 @@ func Parse(configPath string) (*Config, error) {
 		return nil, err
 	}
 	return &c, nil
+}
+
+func (c *Config) PPrint() {
+	fmt.Printf("CONFIG:\nServerPath: %s\nMusicDir: %s\nStaticDir: %s\n",
+		c.ServerPath, c.MusicDir, c.StaticDir)
 }

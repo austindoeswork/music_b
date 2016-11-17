@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/austindoeswork/music_b/cache"
 	"github.com/gorilla/websocket"
@@ -49,7 +50,7 @@ func (p *Player) listenWS() {
 			log.Println("error unmarshalling command (" + p.party + ")")
 			continue
 		}
-		fmt.Println("ws: (" + p.party + ") " + cmd.Command)
+		fmt.Println("ws: (" + p.party + ") " + cmd.Command + " : " + strings.Join(cmd.Body, " "))
 		switch cmd.Command {
 		case "join":
 			if len(cmd.Body) > 0 {
@@ -71,6 +72,20 @@ func (p *Player) listenWS() {
 				continue
 			} else {
 				p.respond("join", "FAIL", "Please Provide A Name")
+				continue
+			}
+		case "id":
+			if len(cmd.Body) > 0 {
+				song, err := p.c.GetSong(cmd.Body[0])
+				if err != nil {
+					p.respond("id", "FAIL", "cant find song")
+					continue
+				} else {
+					p.respond("id", song.Title())
+					continue
+				}
+			} else {
+				p.respond("id", "FAIL", "Please Provide An ID")
 				continue
 			}
 		case "get":

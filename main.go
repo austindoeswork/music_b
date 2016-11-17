@@ -34,6 +34,7 @@ func main() {
 		fmt.Println(err.Error())
 		return
 	}
+	conf.PPrint()
 
 	//facebook
 	f, err := listener.NewFBListener(fbemail, fbpass, fbsessionPath)

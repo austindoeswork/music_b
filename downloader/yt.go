@@ -2,16 +2,19 @@ package downloader
 
 import (
 	"errors"
-	// "fmt"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 
-	"golang.org/x/net/html"
+	"github.com/austindoeswork/music_b/cache"
 
 	"github.com/rylio/ytdl"
+	"golang.org/x/net/html"
 )
 
 var (
@@ -22,14 +25,36 @@ var (
 //TODO make this clean itself up somehow
 
 type YTDownloader struct {
+	c   *cache.Cache
 	dir string
 }
 
-func NewYTDownloader(dir string) *YTDownloader {
-	return &YTDownloader{
-		dir,
+func NewYTDownloader(c *cache.Cache, dir string) (*YTDownloader, error) {
+	d, err := os.Open(dir)
+	if err != nil {
+		return nil, err
 	}
+	defer d.Close()
+	names, err := d.Readdirnames(-1)
+	if err != nil {
+		return nil, err
+	}
+	for _, name := range names {
+		err = os.RemoveAll(filepath.Join(dir, name))
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &YTDownloader{
+		c,
+		dir,
+	}, nil
 }
+
+// func (d *YTDownloader) Clean() {
+
+// }
 
 //TODO err handling
 //TODO threading and pooling
@@ -44,6 +69,10 @@ func (d *YTDownloader) FromQuery(query string) (string, string, string, time.Dur
 		return "", "", "", 0, errors.New("failed to get video")
 	}
 	vid := vids[0]
+	if s, err := d.c.GetSong(vid); err == nil {
+		fmt.Println("song exists")
+		return vid, s.Path(), s.Title(), s.Length(), nil
+	}
 
 	v, err := ytdl.GetVideoInfo(ytWatchUrl + vid)
 	if err != nil {

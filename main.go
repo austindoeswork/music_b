@@ -22,12 +22,19 @@ var (
 	fbemail       = os.Getenv("FBEMAIL")
 	fbpass        = os.Getenv("FBPASS")
 
-	configFlag = flag.String("config", os.Getenv("HOME")+"/.music_b/default.json", "path to config")
+	configFlag  = flag.String("config", os.Getenv("HOME")+"/.music_b/default.json", "path to config")
+	versionFlag = flag.Bool("v", false, "git commit hash")
+
+	commithash string
 )
 
 func main() {
 	flag.Parse()
-
+	if *versionFlag {
+		fmt.Println(commithash)
+		return
+	}
+	fmt.Println("version: " + commithash)
 	//config
 	conf, err := config.Parse(*configFlag)
 	if err != nil {
@@ -52,7 +59,12 @@ func main() {
 	com.Listen(conf.StaticDir)
 
 	//downloader
-	ytd := downloader.NewYTDownloader(conf.MusicDir)
+	ytd, err := downloader.NewYTDownloader(c, conf.MusicDir)
+	if err != nil {
+		fmt.Println("DOWNLOADER: failed.")
+		return
+	}
+	fmt.Println("DOWNLOADER: initialized.")
 
 	//server
 	serv := server.New(c)
@@ -75,7 +87,7 @@ func main() {
 	}()
 
 	//start
-	fmt.Println("starting server @ " + conf.ServerPath)
+	fmt.Println("blastoff. " + conf.ServerPath)
 	http.ListenAndServe(conf.ServerPath, nil)
 }
 

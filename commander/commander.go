@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/austindoeswork/music_b/cache"
@@ -164,7 +165,7 @@ func test(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Commander) Listen(staticdir string) {
-	http.HandleFunc("/test", test)
+	http.HandleFunc("/mbtest", test)
 	http.Handle("/musicb/", http.StripPrefix("/musicb/", http.FileServer(http.Dir(staticdir))))
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("COMMANDER: ws request received.")

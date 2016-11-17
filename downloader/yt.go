@@ -110,7 +110,9 @@ func (d *YTDownloader) FromQuery(query string) (string, string, string, time.Dur
 	if err != nil {
 		return "", "", "", 0, err
 	}
-	// fmt.Println(v.Title)
+	if v.Duration.Minutes() > 12 {
+		return "", "", "", 0, errors.New("video too long")
+	}
 
 	filePath := d.dir + vid + ".musicb"
 	cmd := exec.Command("youtube-dl", "--extract-audio",

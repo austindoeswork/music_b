@@ -44,8 +44,8 @@ function draw(analyser) {
 
     var theta = 2*Math.PI*(i/bufferLength);
     var r = v + RAD;
-    var dx = CENTERX + r*Math.cos(theta);
-    var dy = CENTERY + r*Math.sin(theta);
+    var dx = CENTERX + r*Math.cos(theta+Math.PI/2);
+    var dy = CENTERY + r*Math.sin(theta+Math.PI/2);
 
     points.push({"x": dx, "y": dy});
   }

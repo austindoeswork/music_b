@@ -56,31 +56,31 @@ function getNameFromId(id) {
 function parseResponse(r) {
   res = JSON.parse(r);
 
+  console.log(r);
+
   if (res.Command == "skip") {
     AudioEndedHandler();
     return "skipped";
   } else if (res.Command == "get" || res.Command == "next") {
-    console.log(res);
-    if (res.Body[0] == "FAIL") {
+    if (res.Body[0] != "FAIL" && res.Body.length != 0) {
+      playQueue = [];
+      playQueue.push("http://austindoes.work/song/" + res.Body[0]);
+      return "got";
+    } else {
       return "FAIL";
     }
-
-    playQueue = [];
-
-    for (var i = 0; i < res.Body.length; i++) {
-      playQueue.push("http://austindoes.work/song/" + res.Body[i]);
-    }
-    return "got";
   } else if (res.Command == "join") {
-    if (res.Body[0] != "FAIL") {
+    if (res.Body[0] != "FAIL" && res.Body.length != 0) {
       createSuccess = true;
       var partyText = "you're hosting \"" + res.Body[0] + "\"";
       document.getElementById("partyName").innerHTML = partyText;
     }
     return res.Body[0];
   } else if (res.Command == "id") {
-    currentSongname = res.Body[0];
-    OnSongNameChange();
+    if (res.Body[0] != "FAIL" && res.Body.length != 0) {
+      currentSongname = res.Body[0];
+      OnSongNameChange();
+    }
     return res.Body[0];
   }
 }

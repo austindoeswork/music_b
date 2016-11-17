@@ -25,7 +25,7 @@ function checkQueueReady() {
     AudioEndedHandler();
   } else {
     requestSong();
-    window.setTimeout(checkQueueReady, 200);
+    window.setTimeout(checkQueueReady, 1000);
   }
 }
 
@@ -50,6 +50,7 @@ function AudioEndedHandler() {
     checkQueueReady();
     return;
   } else {
+    console.log(playQueue);
     gotFirst = true;
     var button = document.getElementById("playButton");
     button.src = "img/elip.png";

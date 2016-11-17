@@ -57,6 +57,10 @@ func (p *Player) listenWS() {
 			if len(cmd.Body) > 0 {
 				partyName := cmd.Body[0]
 				encodedName := p.c.GetEncodedName(partyName)
+				if len(encodedName) < 3 {
+					p.respond("join", "FAIL", "failed to make party")
+					continue
+				}
 				_, err := p.c.MakeParty(partyName)
 
 				if err != nil {
@@ -86,6 +90,15 @@ func (p *Player) listenWS() {
 					p.respond("rejoin", "FAIL", "party DNE")
 					continue
 				} else {
+					isopen, err := p.c.PartyOpen(encodedName)
+					if err != nil {
+						p.respond("rejoin", "FAIL")
+						continue
+					}
+					if !isopen {
+						p.respond("rejoin", "FAIL", "party already controlled")
+						continue
+					}
 					p.party = encodedName
 					p.respond("rejoin", partyName)
 				}

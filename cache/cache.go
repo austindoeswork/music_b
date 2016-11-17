@@ -99,6 +99,16 @@ func (c *Cache) PartyExists(partyName string) bool {
 	return ok
 }
 
+func (c *Cache) PartyOpen(partyName string) (bool, error) {
+	var encodedName string
+	encodedName = encodeName(partyName)
+
+	if _, ok := c.parties[encodedName]; !ok {
+		return false, NoPartyError{encodedName}
+	}
+	return c.parties[encodedName].IsOpen(), nil
+}
+
 func (c *Cache) EndOpenParty(partyName string) error {
 	encodedName := encodeName(partyName)
 	// c.mux.Lock()
@@ -107,21 +117,33 @@ func (c *Cache) EndOpenParty(partyName string) error {
 		return NoPartyError{encodedName}
 	}
 
+	if c.parties[encodedName].IsOpen() {
+		return nil
+	}
+
 	c.parties[encodedName].Open()
 
+	var err error
+	err = nil
 	go func() {
-		fmt.Println("OPENED PARTY, WILL GET BACK TO YOU IN 30 SECONDS")
+		fmt.Println("ENDING PARTY " + encodedName + ", WILL GET BACK TO YOU IN 30 SECONDS")
 		time.AfterFunc(time.Second*30, func() {
+			if _, ok := c.parties[encodedName]; !ok {
+				// c.mux.Unlock()
+				err = NoPartyError{encodedName}
+				return
+			}
+
 			if c.parties[encodedName].IsOpen() {
 				c.EndParty(encodedName)
-				fmt.Println("CLOSED PARTY")
+				fmt.Println("ENDING PARTY:" + encodedName)
 			} else {
-				fmt.Println("DIDN'T CLOSE PARTY")
+				fmt.Println("DIDN'T END PARTY:" + encodedName)
 			}
 		})
 	}()
 
-	return nil
+	return err
 }
 
 //TODO somehow send msg to connected threads
@@ -134,7 +156,6 @@ func (c *Cache) EndParty(partyName string) error {
 		// c.mux.Unlock()
 		return NoPartyError{encodedName}
 	}
-	delete(c.parties, encodedName)
 
 	//delete player
 	c.DeletePlayer(encodedName)
@@ -147,9 +168,22 @@ func (c *Cache) EndParty(partyName string) error {
 		}
 	}
 	for _, thread := range toDelete {
-		delete(c.threads, thread)
+		if _, ok := c.threads[thread]; ok {
+			delete(c.threads, thread)
+		}
 	}
 	// c.mux.Unlock()
+
+	//"play" songs
+	songs := c.parties[encodedName].GetSongList()
+	for _, song := range songs {
+		s, ok := c.songs[song]
+		if ok {
+			s.Played()
+		}
+	}
+
+	delete(c.parties, encodedName)
 
 	return nil
 }

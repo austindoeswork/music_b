@@ -24,7 +24,11 @@ function checkQueueReady() {
   if (playQueue.length > 0) {
     AudioEndedHandler();
   } else {
-    requestSong();
+    if (gotFirst) {
+      nextSong();
+    } else {
+      requestSong();
+    }
     window.setTimeout(checkQueueReady, 1000);
   }
 }
@@ -35,25 +39,22 @@ function AudioEndedHandler() {
   var audio = document.getElementById("audio");
   audio.pause();
 
-  if (playQueue.length != 0) {
-    // how did this happen?
-    return;
-  }
-
-  if (qLength == "0") {
-    var button = document.getElementById("playButton");
-    button.src = "img/sad.png";
-    currentSongname = "No songs in queue :[";
-    OnSongNameChange();
+  if (playQueue.length == 0 ) {
+    getQueueLength();
+    if (qLength == "0") {
+      var button = document.getElementById("playButton");
+      button.src = "img/sad.png";
+      currentSongname = "No songs in queue :[";
+      OnSongNameChange();
+    } else {
+      var button = document.getElementById("playButton");
+      button.src = "img/elip.png";
+      currentSongname = "buffering, hold your horses";
+      OnSongNameChange();
+    }
 
     checkQueueReady();
     return;
-  } else {
-    var button = document.getElementById("playButton");
-    button.src = "img/elip.png";
-    currentSongname = "buffering, hold your horses";
-    OnSongNameChange();
-    nextSong();
   }
 
   gotFirst = true; // only care about the first time this is set

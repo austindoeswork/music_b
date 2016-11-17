@@ -34,7 +34,6 @@ function nextSong() {
   };
 
   ws.send(JSON.stringify(msg));
-  getQueueLength();
 }
 
 function createRoom() {
@@ -71,7 +70,7 @@ function parseResponse(r) {
     AudioEndedHandler();
     return "skipped";
   } else if (res.Command == "length") {
-    if (res.Body[0] != "FAIL" && res.Body/length != 0) {
+    if (res.Body[0] != "FAIL" && res.Body.length != 0) {
       qLength = res.Body[0];
     }
     return res.Body[0];

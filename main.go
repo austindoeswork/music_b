@@ -3,11 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 
 	"github.com/austindoeswork/music_b/cache"
 	"github.com/austindoeswork/music_b/commander"
+	"github.com/austindoeswork/music_b/config"
 	"github.com/austindoeswork/music_b/downloader"
 	"github.com/austindoeswork/music_b/handler"
 	"github.com/austindoeswork/music_b/listener"
@@ -16,18 +18,22 @@ import (
 )
 
 var (
-	fbsessionPath = os.Getenv("HOME") + "/.music_bitch_ui/session_data"
+	fbsessionPath = os.Getenv("HOME") + "/.music_b/session_data"
 	fbemail       = os.Getenv("FBEMAIL")
 	fbpass        = os.Getenv("FBPASS")
 
-	audioDirFlag = flag.String("audioDir", "/Users/austin/Music/Illegal/", "path to audioDir")
-	//TODO use a config
-	comFlag = flag.String("com", ":80", "port for com")
-	serFlag = flag.String("server", ":6969", "port for music server")
+	configFlag = flag.String("config", os.Getenv("HOME")+"/.music_b/default.json", "path to config")
 )
 
 func main() {
 	flag.Parse()
+
+	//config
+	conf, err := config.Parse(*configFlag)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 
 	//facebook
 	f, err := listener.NewFBListener(fbemail, fbpass, fbsessionPath)
@@ -35,42 +41,41 @@ func main() {
 		fmt.Println(err.Error())
 	}
 	fb_c := f.Listen()
+	fmt.Println("LISTENER: initialized.")
 
 	//cache
 	c := cache.New()
 
-	//make test party
-	pID, err := c.MakeParty("Sausage Fest")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	fmt.Println("Party Created: ", pID)
-
 	//commander
 	com := commander.New(c)
-	go com.Listen(*comFlag)
+	com.Listen(conf.StaticDir)
 
 	//downloader
-	ytd := downloader.NewYTDownloader(*audioDirFlag)
+	ytd := downloader.NewYTDownloader(conf.MusicDir)
 
 	//server
 	serv := server.New(c)
-	go serv.Start(*serFlag)
+	serv.Start()
 
 	//router
 	r := router.NewMessageRouter()
 	addMessageRoutes(r, c, ytd, com)
 
 	//pass messages to router
-	for {
-		select {
-		case msg := <-fb_c:
-			fmt.Println("fb: " + msg.Fulltext())
-			go easterEggs(msg)
-			r.Route(msg)
+	go func() {
+		for {
+			select {
+			case msg := <-fb_c:
+				fmt.Println("fb: " + msg.Fulltext())
+				go easterEggs(msg)
+				r.Route(msg)
+			}
 		}
-	}
+	}()
 
+	//start
+	fmt.Println("starting server @ " + conf.ServerPath)
+	http.ListenAndServe(conf.ServerPath, nil)
 }
 
 func addMessageRoutes(r *router.MessageRouter, c *cache.Cache, d *downloader.YTDownloader, com *commander.Commander) {

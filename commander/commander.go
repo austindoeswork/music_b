@@ -13,10 +13,11 @@ import (
 	"github.com/wardn/uuid"
 )
 
-//TODO make this not a fucking switch case!!!!!!
 //TODO better err handling
-
 //TODO better implementation for this
+// ============================================================================
+// PLAYER =====================================================================
+// ============================================================================
 
 type Player struct {
 	c     *cache.Cache
@@ -57,8 +58,8 @@ func (p *Player) listenWS() {
 				_, err := p.c.MakeParty(partyName)
 
 				if err != nil {
-					p.party = encodedName
-					p.respond("join", "HIJACKING")
+					p.respond("join", "FAIL", "no hijacking")
+					continue
 				} else {
 					p.party = encodedName
 					p.respond("join", partyName)
@@ -69,13 +70,13 @@ func (p *Player) listenWS() {
 				}
 				continue
 			} else {
-				p.respond("join", "FAIL")
+				p.respond("join", "FAIL", "Please Provide A Name")
 				continue
 			}
 		case "get":
 			songs, err := p.c.GetSongs(p.party, 2)
 			if err != nil {
-				p.respond("get", "FAIL")
+				p.respond("get", "FAIL", "couldn't get songs")
 				continue
 			} else {
 				p.respond("get", songs...)
@@ -84,12 +85,12 @@ func (p *Player) listenWS() {
 		case "next":
 			err := p.c.PopSong(p.party)
 			if err != nil {
-				p.respond("next", "FAIL")
+				p.respond("next", "FAIL", "couldn't remove song")
 				continue
 			}
 			songs, err := p.c.GetSongs(p.party, 2)
 			if err != nil {
-				p.respond("next", "FAIL")
+				p.respond("next", "FAIL", "couldn't get songs")
 				continue
 			} else {
 				p.respond("next", songs...)
@@ -117,6 +118,10 @@ func (p *Player) command(cmd PlayerCommand) error {
 	return err
 }
 
+// ============================================================================
+// COMMANDER ==================================================================
+// ============================================================================
+
 type Commander struct {
 	c       *cache.Cache
 	players map[string]*Player
@@ -129,32 +134,30 @@ func New(c *cache.Cache) *Commander {
 	}
 }
 
-func home(w http.ResponseWriter, r *http.Request) {
-	homeTemplate.Execute(w, "ws://"+"austinsland.ottoq.com/ws")
+func test(w http.ResponseWriter, r *http.Request) {
+	testTemplate.Execute(w, "ws://"+"austinsland.ottoq.com:8888/ws")
 }
 
-func (c *Commander) Listen(port string) {
-	http.HandleFunc("/test", home)
-
-	fs := http.FileServer(http.Dir("/var/mbwww/"))
-	http.Handle("/", fs)
-
+func (c *Commander) Listen(staticdir string) {
+	http.HandleFunc("/test", test)
+	http.Handle("/musicb/", http.StripPrefix("/musicb/", http.FileServer(http.Dir(staticdir))))
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("ws Request received.")
+		fmt.Println("COMMANDER: ws request received.")
 		c.serveWS(w, r)
 	})
+	fmt.Println("COMMANDER: initialized.")
 
-	fmt.Println("Started commander @ " + port)
-	err := http.ListenAndServe(port, nil)
-	if err != nil {
-		log.Panic("Commander: " + err.Error())
-	}
+	// fmt.Println("Started commander @ " + port)
+	// err := http.ListenAndServe(port, nil)
+	// if err != nil {
+	// log.Panic("Commander: " + err.Error())
+	// }
 }
 
 func (c *Commander) serveWS(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Panic("Commander: " + err.Error())
+		log.Panic("COMMANDER: " + err.Error())
 	}
 	playerID := uuid.New()
 
@@ -167,7 +170,7 @@ func (c *Commander) serveWS(w http.ResponseWriter, r *http.Request) {
 	c.players[playerID] = p
 	p.listenWS()
 
-	fmt.Println("serve ws ended")
+	fmt.Println("COMMANDER: serve ws ended")
 	delete(c.players, playerID)
 }
 
@@ -185,7 +188,7 @@ func (c *Commander) Command(playerID string, cmd PlayerCommand) error {
 // 		   /
 // party --
 
-var homeTemplate = template.Must(template.New("").Parse(`
+var testTemplate = template.Must(template.New("").Parse(`
 <!DOCTYPE html>
 <head>
 <meta charset="utf-8">
@@ -265,7 +268,7 @@ window.addEventListener("load", function(evt) {
 <form>
 	<button id="open">Open</button>
 	<button id="close">Close</button>
-	<p><input id="input" type="text" value=".fuckjon"></p>
+	<p><input id="input" type="text" value="{}"></p>
 	<p>
 	<button id="send">Send</button>
 	<button id="clear">Clear</button>

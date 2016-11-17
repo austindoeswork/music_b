@@ -28,9 +28,8 @@ func (s *Server) serveSong(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, song.Path())
 }
 
-func (s *Server) Start(port string) {
+func (s *Server) Start() {
 	f := s.serveSong
 	http.HandleFunc("/song/", f)
-	fmt.Println("SERVER: started @ " + port)
-	http.ListenAndServe(port, nil)
+	fmt.Println("SERVER: initialized.")
 }

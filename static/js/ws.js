@@ -1,11 +1,10 @@
 // Websocket Helpers
 var ws; // the websocket itself
+var createSuccess = false;
 var mbInfo = {
   "roomName": "TylerTest",
   "id": "TylerTest"
 }
-
-createWS("austindoes.work/ws", "");
 
 function createWS(url, port) {
   var loc = "ws://" + url;
@@ -45,6 +44,10 @@ function parseResponse(r) {
       if (playQueue.indexOf(res.Body[i]) == -1) {
         playQueue.push("http://austindoes.work/song/" + res.Body[i]);
       }
+    }
+  } else if (res.Command == "join") {
+    if (res.Body[0] != "FAIL") {
+      createSuccess = true;
     }
   }
 }

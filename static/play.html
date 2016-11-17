@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.0.52/wavesurfer.min.js"></script>
+  <script src="https://use.fontawesome.com/0f92278437.js"></script>
 
   <script src="js/waveform.js"></script>
   <script src="js/audio.js"></script>
@@ -19,33 +20,42 @@
   <script src="js/handlers.js"></script>
 
   <script>
+    function NewSubmit(e) {
+      e.preventDefault();
+      TryCreatingRoom();
+      return false;
+    }
+
     function BodyLoadHandler() {
       document.getElementById("playButton").style.webkitAnimationPlayState = 'paused';
       document.getElementById("title").style.webkitAnimationPlayState = 'paused';
       document.getElementById("canvas").style.webkitAnimationPlayState = 'paused';
 
-      // window.onclick = function(e){
-      ws.onopen = function(e){
-        document.getElementById("loading").style.display = 'none';
-
-        document.getElementById("playButton").style.webkitAnimationPlayState = 'running';
-        document.getElementById("title").style.webkitAnimationPlayState = 'running';
-        document.getElementById("canvas").style.webkitAnimationPlayState = 'running';
-
-        BodyReadyHandler();
-        ws.onmessage = function(e) {
-          parseResponse(e.data);
-        }
-
-        createRoom();
-        requestSong();
+      document.getElementById("form").onsubmit = NewSubmit;
+      if (window.location.search.substring(1) == "fail") {
+        document.getElementById("fail").style.display = "block";
       }
     }
   </script>
 </head>
 
 <body onload="BodyLoadHandler();">
-  <div class="page">
+  <div class="page" id="createpage">
+    <h2>create a party</h2>
+    <center>
+      <form id="form">
+      <input type="text" placeholder="name your party">
+
+
+      <button type="submit" id="submit" class="submit" value="">
+        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+      </button>
+
+      <p id="fail">that name was taken, sorry</p>
+    </center>
+
+  </div>
+  <div class="page" id="playerpage">
     <!--h1>$&nbsp;&nbsp;./music_b</h1-->
     <h1 id="title">music_b</h1>
     <h1 id="loading">connecting to server...</h1>

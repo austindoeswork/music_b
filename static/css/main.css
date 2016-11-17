@@ -63,6 +63,10 @@
   }
 }
 
+#playerpage {
+  display: none;
+}
+
 h1, h2, h3 {
   color: var(--heading-color);
 }
@@ -77,6 +81,38 @@ h1 {
   top: var(--heading-margin-top);
 }
 
+h2 {
+  width: 100%;
+  text-align: center;
+  margin-top: 25vh;
+  font-size: 13vmin;
+}
+
+input {
+  font-family: 'Montserrat', sans-serif;
+  font-size: var(--font-size-text);
+  padding: 5px;
+}
+
+#fail {
+  display: none;
+  width: 100%;
+  text-align: center;
+  color: #ee1111;
+}
+
+.fa-hashtag {
+  font-size: 10vmin;
+}
+
+.submit {
+  background-color: var(--bg-color-main);
+  margin-top: 5vmin;
+  font-size: 10vmin;
+  border: none;
+  padding-bottom: 10px;
+}
+
 .button {
   width: var(--button-size);
   height: var(--button-size);
@@ -84,7 +120,7 @@ h1 {
   display: block;
 }
 
-div, p {
+div, p, .submit {
   font-family: 'Montserrat', sans-serif;
   color: var(--text-color-main);
 }

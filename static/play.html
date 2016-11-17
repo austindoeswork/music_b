@@ -37,6 +37,20 @@
       document.getElementById("title").style.webkitAnimationPlayState = 'paused';
       document.getElementById("canvas").style.webkitAnimationPlayState = 'paused';
 
+      // Attempt to restore session
+      var cookieTimestamp = localStorage.getItem("timestamp");
+      if (cookieTimestamp != null) {
+        if (Date.now() - cookieTimestamp < 45000) {
+          mbInfo.roomName = localStorage.getItem("roomname");
+          mbInfo.id = localStorage.getItem("id");
+          OnReconnect();
+        } else {
+          localStorage.clear();
+        }
+      } else {
+        localStorage.clear();
+      }
+
       document.getElementById("formCreateParty").onsubmit = NewSubmit;
       if (window.location.search.substring(1) == "fail") {
         document.getElementById("fail").style.display = "block";

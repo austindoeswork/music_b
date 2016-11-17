@@ -110,8 +110,11 @@ function CheckRoomJoin(depth) {
   } else if (depth > 0) {
     window.setTimeout(function(){CheckRoomJoin(depth-1);}, 200);
   } else {
-    localStorage.clear();
-    window.location = "?fail";
+    if (localStorage.getItem("timestamp") != null) {
+      localStorage.clear();
+    } else {
+      window.location = "?fail";
+    }
   }
 }
 
@@ -139,11 +142,10 @@ function OnBodyResize() {
 }
 
 function OnPageLeave() {
-  if (mbInfo.id != "") {
-    localStorage.setItem("roomname", mbInfo.roomName);
-    localStorage.setItem("id", mbInfo.id);
-    localStorage.setItem("timestamp", Date.now());
-  }
+  console.log("out");
+  localStorage.setItem("roomname", mbInfo.roomName);
+  localStorage.setItem("id", mbInfo.id);
+  localStorage.setItem("timestamp", Date.now());
 }
 
 function OnReconnect() {
@@ -155,7 +157,6 @@ function OnReconnect() {
     }
 
     rejoinRoom();
-    localStorage.clear();
     CheckRoomJoin(5);
   }
 }

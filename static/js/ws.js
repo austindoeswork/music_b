@@ -6,7 +6,7 @@ var qLength = "0";
 var mbInfo = {
   "roomName": "",
   "id": ""
-}
+};
 
 function createWS(url, port) {
   var loc = "ws://" + url;
@@ -107,7 +107,7 @@ function parseResponse(r) {
       document.getElementById("partyName").innerHTML = partyText;
     }
     return res.Body[0];
-  } else if (res.Command == "join") {
+  } else if (res.Command == "join" || res.Command == "rejoin") {
     if (res.Body[0] != "FAIL" && res.Body.length != 0) {
       createSuccess = true;
       var partyText = "you're hosting \"" + res.Body[0] + "\"";

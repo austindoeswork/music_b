@@ -20,8 +20,12 @@ func NewParty(name, encodedName string) *Party {
 }
 
 func (p *Party) PopSong() error {
-	if len(p.songs) >= 1 {
+	if len(p.songs) > 0 {
+		fmt.Println("before: " + strings.Join(p.songs, " "))
 		p.songs = p.songs[1:]
+		fmt.Println("after: " + strings.Join(p.songs, " "))
+	} else {
+		fmt.Println("nothing to pop")
 	}
 	return nil
 }

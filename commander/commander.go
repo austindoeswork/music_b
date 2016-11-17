@@ -59,7 +59,7 @@ func (p *Player) listenWS() {
 				_, err := p.c.MakeParty(partyName)
 
 				if err != nil {
-					p.respond("join", "FAIL", "no hijacking")
+					p.respond("join", "FAIL", "failed to make party")
 					continue
 				} else {
 					p.party = encodedName
@@ -95,6 +95,7 @@ func (p *Player) listenWS() {
 				continue
 			} else {
 				p.respond("get", songs...)
+				fmt.Println("(get) sending: " + strings.Join(songs, " "))
 				continue
 			}
 		case "next":
@@ -109,6 +110,7 @@ func (p *Player) listenWS() {
 				continue
 			} else {
 				p.respond("next", songs...)
+				fmt.Println("(next) sending: " + strings.Join(songs, " "))
 				continue
 			}
 		default:

@@ -2,9 +2,9 @@ package cache
 
 import (
 	// "fmt"
-	"math/rand"
+	"errors"
 	"regexp"
-	"strconv"
+	// "strconv"
 	"strings"
 	"sync"
 	"time"
@@ -73,15 +73,11 @@ func (c *Cache) GetEncodedName(partyName string) string {
 }
 
 func (c *Cache) MakeParty(partyName string) (string, error) {
-	var encodedName string
-
-	if len(partyName) == 0 {
-		//TODO make sure there's no collisions
-		partyName = genID()
-		encodedName = partyName
-	} else {
-		encodedName = encodeName(partyName)
+	if len(partyName) <= 1 {
+		return "", errors.New("partyName too short")
 	}
+	var encodedName string
+	encodedName = encodeName(partyName)
 
 	if _, ok := c.parties[encodedName]; ok {
 		return "", PartyExistsError{encodedName}
@@ -316,12 +312,6 @@ func (c *Cache) ClearSongs(partyName string) error {
 }
 
 //HELPY==========================================================
-
-func genID() string {
-	//TODO seed once yo
-	rand.Seed(int64(time.Now().Nanosecond()))
-	return strconv.Itoa(rand.Intn(8999) + 1000)
-}
 
 type NoPartyError struct {
 	partyID string

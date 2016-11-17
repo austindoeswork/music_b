@@ -40,11 +40,7 @@ function parseResponse(r) {
 
   if (res.Command == "skip") {
     AudioEndedHandler();
-  } else if (res.Command == "res") {
-    if (res.body.length == 1) {
-      return; // response after joining
-    }
-    // else
+  } else if (res.Command == "get") {
     for (var i = 0; i < res.Body.length; i++) {
       if (playQueue.indexOf(res.Body[i]) == -1) {
         playQueue.push("http://austindoes.work/song/" + res.Body[i]);

@@ -17,7 +17,20 @@ function AudioLoadedHandler() {
   audioLoading = false;
 }
 
+function checkQueueReady() {
+  if (playQueue.length > 0) {
+    AudioEndedHandler();
+  } else {
+    window.setTimeout(checkQueueReady, 200);
+  }
+}
+
 function AudioEndedHandler() {
+  if (playQueue.length == 0) {
+    requestSong();
+    checkQueueReady();
+  }
+
   audioLoading = true;
 
   var audio = document.getElementById("audio");

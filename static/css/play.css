@@ -30,5 +30,6 @@ canvas {
 }
 
 .fa-times {
+  vertical-align: middle;
   color: #ee5555;
 }

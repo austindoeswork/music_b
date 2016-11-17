@@ -28,3 +28,7 @@ canvas {
 #songName {
   margin-top: 5vmin;
 }
+
+.fa-times {
+  color: red;
+}

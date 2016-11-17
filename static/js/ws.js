@@ -81,6 +81,10 @@ function getQueueLength() {
   ws.send(JSON.stringify(msg));
 }
 
+function closeParty() {
+  return;
+}
+
 function parseResponse(r) {
   res = JSON.parse(r);
 
@@ -110,7 +114,7 @@ function parseResponse(r) {
   } else if (res.Command == "join" || res.Command == "rejoin") {
     if (res.Body[0] != "FAIL" && res.Body.length != 0) {
       createSuccess = true;
-      var partyText = "you're hosting \"" + res.Body[0] + "\"";
+      var partyText = "you're hosting \"" + res.Body[0] + "\" <i class=\"fa fa-times\" onclick=\"OnCloseParty();\"aria-hidden=\"true\"></i>";
       document.getElementById("partyName").innerHTML = partyText;
     }
     return res.Body[0];

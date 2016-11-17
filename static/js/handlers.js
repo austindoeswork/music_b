@@ -110,8 +110,8 @@ function CheckRoomJoin(depth) {
   } else if (depth > 0) {
     window.setTimeout(function(){CheckRoomJoin(depth-1);}, 200);
   } else {
-    window.location = "?fail";
     localStorage.clear();
+    window.location = "?fail";
   }
 }
 

@@ -78,11 +78,11 @@ function AudioEndedHandler() {
 
 function BodyReadyHandler() {
   var cookieTimestamp = localStorage.getItem("timestamp");
-  if (false) {
-  //if (cookieTimestamp != null) {
+  if (cookieTimestamp != null) {
     if (now() - cookieTimestamp < 45) {
       mbInfo.roomName = localStorage.getItem("roomname");
       mbInfo.id = localStorage.getItem("id");
+      OnReconnect();
     } else {
       localStorage.clear();
     }

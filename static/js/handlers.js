@@ -41,8 +41,12 @@ function AudioEndedHandler() {
     checkQueueReady();
     return;
   } else {
+    console.log(playQueue);
+    var button = document.getElementById("playButton");
+    button.src = "img/elip.png";
     currentSongname = "buffering, hold your horses";
     OnSongNameChange();
+    return;
   }
 
   var audio = document.getElementById("audio");

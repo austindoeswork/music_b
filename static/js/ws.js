@@ -45,11 +45,16 @@ function getNameFromId(id) {
 
 function parseResponse(r) {
   res = JSON.parse(r);
+  console.log(res);
 
   if (res.Command == "skip") {
     AudioEndedHandler();
     return "skipped";
   } else if (res.Command == "get") {
+    if (res.Body[0] == "FAIL") {
+      return "FAIL";
+    }
+    
     for (var i = 0; i < res.Body.length; i++) {
       if (playQueue.indexOf(res.Body[i]) == -1) {
         playQueue.push("http://austindoes.work/song/" + res.Body[i]);

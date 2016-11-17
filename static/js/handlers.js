@@ -36,27 +36,31 @@ function AudioEndedHandler() {
   audio.pause();
 
   if (playQueue.length == 0) {
-    var button = document.getElementById("playButton");
-    button.src = "img/sad.png";
-    currentSongname = "No songs in queue :[";
-    OnSongNameChange();
+    if (qLength == "0") {
+      var button = document.getElementById("playButton");
+      button.src = "img/sad.png";
+      currentSongname = "No songs in queue :[";
+      OnSongNameChange();
 
-    if (gotFirst) {
-      nextSong();
+      if (gotFirst) {
+        nextSong();
+      } else {
+        requestSong();
+      }
+
+      checkQueueReady();
+      return;
     } else {
-      requestSong();
+      console.log(playQueue);
+      var button = document.getElementById("playButton");
+      button.src = "img/elip.png";
+      currentSongname = "buffering, hold your horses";
+      OnSongNameChange();
     }
-
-    checkQueueReady();
-    return;
-  } else {
-    console.log(playQueue);
-    gotFirst = true;
-    var button = document.getElementById("playButton");
-    button.src = "img/elip.png";
-    currentSongname = "buffering, hold your horses";
-    OnSongNameChange();
   }
+
+
+  gotFirst = true;
 
   var source = document.getElementById("source");
 

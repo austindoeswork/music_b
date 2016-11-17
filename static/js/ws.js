@@ -2,6 +2,7 @@
 var ws; // the websocket itself
 var createSuccess = false;
 var gotFirst = false;
+var qLength = "0";
 var mbInfo = {
   "roomName": "TylerTest",
   "id": "TylerTest"
@@ -33,6 +34,7 @@ function nextSong() {
   };
 
   ws.send(JSON.stringify(msg));
+  getQueueLength();
 }
 
 function createRoom() {
@@ -53,6 +55,15 @@ function getNameFromId(id) {
   ws.send(JSON.stringify(msg));
 }
 
+function getQueueLength() {
+  var msg = {
+    Command: "length",
+    Body: [mbInfo.roomName]
+  };
+
+  ws.send(JSON.stringify(msg));
+}
+
 function parseResponse(r) {
   res = JSON.parse(r);
 
@@ -61,6 +72,11 @@ function parseResponse(r) {
   if (res.Command == "skip") {
     AudioEndedHandler();
     return "skipped";
+  } else if (res.Command == "length") {
+    if (res.Body[0] != "FAIL" && res.Body/length != 0) {
+      qLength = res.Body[0];
+    }
+    return res.Body[0];
   } else if (res.Command == "get" || res.Command == "next") {
     if (res.Body[0] != "FAIL" && res.Body.length != 0) {
       playQueue = [];

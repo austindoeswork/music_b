@@ -99,6 +99,10 @@ input {
   padding: 5px;
 }
 
+.fa-arrow-right {
+  vertical-align: middle;
+}
+
 #fail {
   display: none;
   width: 100%;
@@ -113,16 +117,6 @@ input {
   border: none;
   padding-bottom: 10px;
 }
-
-
-.fa-forward {
-  position: fixed;
-  top: 100%;
-  left: 0;
-}
-
-
-
 
 div, p, .submit {
   font-family: 'Montserrat', sans-serif;

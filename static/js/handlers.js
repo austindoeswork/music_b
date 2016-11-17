@@ -50,6 +50,11 @@ function AudioEndedHandler() {
 
   playQueue.pop();
   var srcUrl = playQueue[0];
+
+  var temp = srcUrl.split("/");
+  var ytid = temp[temp.length-1];
+  getNameFromId(ytid);
+
   requestSong();
 
   source.src = srcUrl;
@@ -78,7 +83,8 @@ function BodyReadyHandler() {
 }
 
 function CheckRoomJoin(depth) {
-  if (createSuccess) {
+  // if (createSuccess) {
+  if (true) {
     document.getElementById("createpage").style.display = 'none';
     document.getElementById("loading").style.display = 'none';
     document.getElementById("playerpage").style.display = 'block';
@@ -88,7 +94,6 @@ function CheckRoomJoin(depth) {
     document.getElementById("canvas").style.webkitAnimationPlayState = 'running';
 
     BodyReadyHandler();
-
     requestSong();
   } else if (depth > 0) {
     window.setTimeout(function(){CheckRoomJoin(depth-1);}, 200);

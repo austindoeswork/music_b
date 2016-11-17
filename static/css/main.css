@@ -45,6 +45,9 @@
     /* play button */
     --button-size: 50vmin;
     --button-offset: calc(var(--button-size) / 2 + 2vmin);
+
+
+    --pmargin: 20vmin;
   }
 }
 
@@ -60,6 +63,8 @@
     /* play button */
     --button-size: 25vmin;
     --button-offset: calc(var(--button-size) / 2 + 1vmin);
+
+    --pmargin: 10vmin;
   }
 }
 
@@ -150,9 +155,13 @@ canvas {
   z-index: -1;
 }
 
+p {
+    width: 100%;
+    font-size: var(--font-size-text);
+    text-align: center;
+    margin-top: var(--pmargin);
+}
+
 #songName {
-  width: 100%;
-  font-size: var(--font-size-text);
-  text-align: center;
-  margin-top: 20vmin;
+  margin-top: 5vmin;
 }

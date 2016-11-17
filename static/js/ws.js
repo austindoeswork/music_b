@@ -34,20 +34,36 @@ function createRoom() {
   ws.send(JSON.stringify(msg));
 }
 
+function getNameFromId(id) {
+  var msg = {
+    Command: "id",
+    Body: [id]
+  };
+
+  ws.send(JSON.stringify(msg));
+}
+
 function parseResponse(r) {
   res = JSON.parse(r);
 
   if (res.Command == "skip") {
     AudioEndedHandler();
+    return "skipped";
   } else if (res.Command == "get") {
     for (var i = 0; i < res.Body.length; i++) {
       if (playQueue.indexOf(res.Body[i]) == -1) {
         playQueue.push("http://austindoes.work/song/" + res.Body[i]);
       }
     }
+    return "got";
   } else if (res.Command == "join") {
     if (res.Body[0] != "FAIL") {
       createSuccess = true;
     }
+    return res.Body[0];
+  } else if (res.Command == "id") {
+    currentSongname = res.Body[0];
+    OnSongNameChange();
+    return res.Body[0];
   }
 }

@@ -4,8 +4,8 @@ var createSuccess = false;
 var gotFirst = false;
 var qLength = "0";
 var mbInfo = {
-  "roomName": "TylerTest",
-  "id": "TylerTest"
+  "roomName": "",
+  "id": ""
 }
 
 function createWS(url, port) {

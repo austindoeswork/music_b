@@ -77,19 +77,6 @@ function AudioEndedHandler() {
 }
 
 function BodyReadyHandler() {
-  var cookieTimestamp = localStorage.getItem("timestamp");
-  if (cookieTimestamp != null) {
-    if (now() - cookieTimestamp < 45) {
-      mbInfo.roomName = localStorage.getItem("roomname");
-      mbInfo.id = localStorage.getItem("id");
-      OnReconnect();
-    } else {
-      localStorage.clear();
-    }
-  } else {
-    localStorage.clear();
-  }
-
   var audio = document.getElementById("audio");
   audio.addEventListener("ended", AudioEndedHandler);
   window.setTimeout(function(){document.getElementById("audio").play();}, 700);
@@ -124,6 +111,7 @@ function CheckRoomJoin(depth) {
     window.setTimeout(function(){CheckRoomJoin(depth-1);}, 200);
   } else {
     window.location = "?fail";
+    localStorage.clear();
   }
 }
 
@@ -151,13 +139,17 @@ function OnBodyResize() {
 }
 
 function OnPageLeave() {
-  localStorage.setItem("roomname", mbInfo.roomName);
-  localStorage.setItem("id", mbInfo.id);
-  localStorage.setItem("timestamp", now());
+  console.log("left");
+  if (mbInfo.id != "") {
+    localStorage.setItem("roomname", mbInfo.roomName);
+    localStorage.setItem("id", mbInfo.id);
+    localStorage.setItem("timestamp", Date.now());
+  }
 }
 
 function OnReconnect() {
-  createWS("austindoes.work/ws", "")
+  createWS("austindoes.work/ws", "");
+  console.log("reconnectin");
 
   ws.onopen = function(e) {
     ws.onmessage = function(e) {

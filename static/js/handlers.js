@@ -1,14 +1,17 @@
-function ButtonClickHandler() {
-  if (audioLoading) {
-    return;
-  }
+function OnSongNameChange() {
+  document.getElementById("songName").innerHTML = currentSongname;
+}
 
+function ButtonClickHandler() {
   var button = document.getElementById("playButton");
   var playing = button.src.includes("pause");
 
   if (playing) {
     pauseAudio();
   } else {
+    if (audioLoading || playQueue.length == 0) {
+      return;
+    }
     playAudio();
   }
 }
@@ -26,12 +29,21 @@ function checkQueueReady() {
 }
 
 function AudioEndedHandler() {
+  audioLoading = true;
+
   if (playQueue.length == 0) {
+    var button = document.getElementById("playButton");
+    button.src = "img/sad.png";
+    currentSongname = "No songs in queue :[";
+    OnSongNameChange();
+
     requestSong();
     checkQueueReady();
+    return;
+  } else {
+    currentSongname = "buffering, hold your horses";
+    OnSongNameChange();
   }
-
-  audioLoading = true;
 
   var audio = document.getElementById("audio");
   var source = document.getElementById("source");
@@ -66,7 +78,7 @@ function BodyReadyHandler() {
 }
 
 function CheckRoomJoin(depth) {
-  if (true) {
+  if (createSuccess) {
     document.getElementById("createpage").style.display = 'none';
     document.getElementById("loading").style.display = 'none';
     document.getElementById("playerpage").style.display = 'block';
@@ -97,6 +109,9 @@ function TryCreatingRoom() {
     }
 
     createRoom();
-    CheckRoomJoin();
+    CheckRoomJoin(5);
   }
+
+
+  CheckRoomJoin(5);
 }

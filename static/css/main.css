@@ -102,7 +102,7 @@ input {
 }
 
 .fa-hashtag {
-  font-size: 10vmin;
+  font-size: var(--font-size-title);
 }
 
 .submit {
@@ -148,4 +148,11 @@ canvas {
   top: 0;
   left: 0;
   z-index: -1;
+}
+
+#songName {
+  width: 100%;
+  font-size: var(--font-size-text);
+  text-align: center;
+  margin-top: 20vmin;
 }

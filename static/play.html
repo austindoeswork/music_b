@@ -20,6 +20,12 @@
   <script src="js/handlers.js"></script>
 
   <script>
+  //TODO:
+  // spinny do for buffer
+  // something for no songs in q
+  // party name under button
+  // also song name under button
+
     function NewSubmit(e) {
       e.preventDefault();
       TryCreatingRoom();
@@ -53,8 +59,8 @@
 
       <p id="fail">that name was taken, sorry</p>
     </center>
-
   </div>
+
   <div class="page" id="playerpage">
     <!--h1>$&nbsp;&nbsp;./music_b</h1-->
     <h1 id="title">music_b</h1>
@@ -67,7 +73,9 @@
 
     <canvas id="canvas"></canvas>
 
-    <img onclick="ButtonClickHandler();" class="button" id="playButton" src="img/play.png"/>
+    <img onclick="ButtonClickHandler();" class="button" id="playButton" src="img/logo.png"/>
+
+    <p id="songName">welcome to music_b</p>
   </div>
 </body>
 </html>

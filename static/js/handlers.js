@@ -31,9 +31,9 @@ function checkQueueReady() {
 
 function AudioEndedHandler() {
   audioLoading = true;
-  audio.pause();
 
-  console.log(playQueue);
+  var audio = document.getElementById("audio");
+  audio.pause();
 
   if (playQueue.length == 0) {
     var button = document.getElementById("playButton");
@@ -57,7 +57,6 @@ function AudioEndedHandler() {
     OnSongNameChange();
   }
 
-  var audio = document.getElementById("audio");
   var source = document.getElementById("source");
 
   var srcUrl = playQueue.shift();

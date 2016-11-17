@@ -4,14 +4,10 @@ function OnSongNameChange() {
 
 function ButtonClickHandler() {
   var button = document.getElementById("playButton");
-  var playing = button.src.includes("pause");
 
-  if (playing) {
+  if (button.src.includes("pause")) {
     pauseAudio();
-  } else {
-    if (audioLoading || playQueue.length == 0) {
-      return;
-    }
+  } else if (button.src.includes("play")) {
     playAudio();
   }
 }
@@ -24,10 +20,10 @@ function checkQueueReady() {
   if (playQueue.length > 0) {
     AudioEndedHandler();
   } else {
-    if (gotFirst) {
-      nextSong();
-    } else {
+    if (qLength == "0") {
       requestSong();
+    } else {
+      nextSong();
     }
     window.setTimeout(checkQueueReady, 1000);
   }
@@ -41,6 +37,7 @@ function AudioEndedHandler() {
 
   if (playQueue.length == 0 ) {
     getQueueLength();
+    console.log(qLength);
     if (qLength == "0") {
       var button = document.getElementById("playButton");
       button.src = "img/sad.png";

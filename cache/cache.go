@@ -289,6 +289,9 @@ func (c *Cache) GetSongs(partyName string, count int) ([]string, error) {
 	}
 
 	songs := c.parties[encodedName].GetSongList()
+	if count <= 0 {
+		return songs, nil
+	}
 	if len(songs) >= count {
 		songs = songs[:count]
 	}

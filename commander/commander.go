@@ -89,7 +89,7 @@ func (p *Player) listenWS() {
 				continue
 			}
 		case "get":
-			songs, err := p.c.GetSongs(p.party, 2)
+			songs, err := p.c.GetSongs(p.party, 1)
 			if err != nil {
 				p.respond("get", "FAIL", "couldn't get songs")
 				continue
@@ -104,7 +104,7 @@ func (p *Player) listenWS() {
 				p.respond("next", "FAIL", "couldn't remove song")
 				continue
 			}
-			songs, err := p.c.GetSongs(p.party, 2)
+			songs, err := p.c.GetSongs(p.party, 1)
 			if err != nil {
 				p.respond("next", "FAIL", "couldn't get songs")
 				continue
@@ -113,6 +113,14 @@ func (p *Player) listenWS() {
 				fmt.Println("(next) sending: " + strings.Join(songs, " "))
 				continue
 			}
+		case "length":
+			songs, err := p.c.GetSongs(p.party, -1)
+			if err != nil {
+				p.respond("length", "FAIL")
+				continue
+			}
+			p.respond("length", strconv.Itoa(len(songs)))
+			continue
 		default:
 		}
 	}

@@ -1,7 +1,5 @@
 
-// draw an oscilloscope of the current audio source
 function draw(analyser) {
-
   var drawVisual = requestAnimationFrame(function(){
     draw(analyser);
   });

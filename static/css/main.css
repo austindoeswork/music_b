@@ -106,10 +106,6 @@ input {
   color: #ee1111;
 }
 
-.fa-hashtag {
-  font-size: var(--font-size-title);
-}
-
 .submit {
   background-color: var(--bg-color-main);
   margin-top: 5vmin;
@@ -118,12 +114,15 @@ input {
   padding-bottom: 10px;
 }
 
-.button {
-  width: var(--button-size);
-  height: var(--button-size);
-  margin: calc(50vh - var(--button-offset)) auto 0 auto;
-  display: block;
+
+.fa-forward {
+  position: fixed;
+  top: 100%;
+  left: 0;
 }
+
+
+
 
 div, p, .submit {
   font-family: 'Montserrat', sans-serif;
@@ -146,22 +145,9 @@ div.page {
   overflow: hidden;
 }
 
-canvas {
-  width: 100vw;
-  height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-}
-
 p {
     width: 100%;
     font-size: var(--font-size-text);
     text-align: center;
     margin-top: var(--pmargin);
-}
-
-#songName {
-  margin-top: 5vmin;
 }

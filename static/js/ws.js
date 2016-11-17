@@ -36,7 +36,7 @@ function nextSong() {
   ws.send(JSON.stringify(msg));
 }
 
-function createRoom() {
+function joinRoom() {
   var msg = {
     Command: "join",
     Body: [mbInfo.roomName]
@@ -48,6 +48,15 @@ function createRoom() {
 function createRoom() {
   var msg = {
     Command: "join",
+    Body: [mbInfo.roomName]
+  };
+
+  ws.send(JSON.stringify(msg));
+}
+
+function rejoinRoom() {
+  var msg = {
+    Command: "rejoin",
     Body: [mbInfo.roomName]
   };
 
@@ -111,5 +120,7 @@ function parseResponse(r) {
       OnSongNameChange();
     }
     return res.Body[0];
+  } else if (res.Command == "terminate") {
+    // uh oh
   }
 }

@@ -8,3 +8,23 @@
   animation-name: shwoopFade;
   animation-duration: 1.2s;
 }
+
+.button {
+  width: var(--button-size);
+  height: var(--button-size);
+  margin: calc(50vh - var(--button-offset)) auto 0 auto;
+  display: block;
+}
+
+canvas {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+#songName {
+  margin-top: 5vmin;
+}

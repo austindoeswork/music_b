@@ -77,6 +77,19 @@ function AudioEndedHandler() {
 }
 
 function BodyReadyHandler() {
+  var cookieTimestamp = localStorage.getItem("timestamp");
+  if (false) {
+  //if (cookieTimestamp != null) {
+    if (now() - cookieTimestamp < 45) {
+      mbInfo.roomName = localStorage.getItem("roomname");
+      mbInfo.id = localStorage.getItem("id");
+    } else {
+      localStorage.clear();
+    }
+  } else {
+    localStorage.clear();
+  }
+
   var audio = document.getElementById("audio");
   audio.addEventListener("ended", AudioEndedHandler);
   window.setTimeout(function(){document.getElementById("audio").play();}, 700);
@@ -127,6 +140,31 @@ function TryCreatingRoom() {
     }
 
     createRoom();
+    CheckRoomJoin(5);
+  }
+}
+
+function OnBodyResize() {
+  var canvas = document.getElementById("canvas");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function OnPageLeave() {
+  localStorage.setItem("roomname", mbInfo.roomName);
+  localStorage.setItem("id", mbInfo.id);
+  localStorage.setItem("timestamp", now());
+}
+
+function OnReconnect() {
+  createWS("austindoes.work/ws", "")
+
+  ws.onopen = function(e) {
+    ws.onmessage = function(e) {
+      parseResponse(e.data);
+    }
+
+    rejoinRoom();
     CheckRoomJoin(5);
   }
 }

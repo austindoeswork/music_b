@@ -22,6 +22,10 @@
   <script src="js/handlers.js"></script>
 
   <script>
+
+    window.onresize = OnBodyResize;
+    window.onunload = OnPageLeave;
+
     function NewSubmit(e) {
       e.preventDefault();
       TryCreatingRoom();
@@ -33,7 +37,7 @@
       document.getElementById("title").style.webkitAnimationPlayState = 'paused';
       document.getElementById("canvas").style.webkitAnimationPlayState = 'paused';
 
-      document.getElementById("form").onsubmit = NewSubmit;
+      document.getElementById("formCreateParty").onsubmit = NewSubmit;
       if (window.location.search.substring(1) == "fail") {
         document.getElementById("fail").style.display = "block";
       }
@@ -45,10 +49,10 @@
   <div class="page" id="createpage">
     <h2>create a party</h2>
     <center>
-      <form id="form">
+      <form id="formCreateParty">
       <input id="partyNameInput" type="text" placeholder="name your party">
 
-      <button type="submit" id="submit" class="submit" value="">
+      <button type="submit" id="partyNameInput" class="submit" value="">
         <i class="fa fa-arrow-right" aria-hidden="true"></i>
       </button>
 
@@ -58,7 +62,10 @@
 
   <div class="page" id="playerpage">
     <!--h1>$&nbsp;&nbsp;./music_b</h1-->
-    <h1 id="title">music_b</h1>
+    <h1 id="title">
+        music_b
+    </h1>
+
     <h1 id="loading">connecting to server...</h1>
 
     <audio id="audio" onloadeddata="AudioLoadedHandler();">

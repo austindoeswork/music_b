@@ -139,7 +139,6 @@ function OnBodyResize() {
 }
 
 function OnPageLeave() {
-  console.log("left");
   if (mbInfo.id != "") {
     localStorage.setItem("roomname", mbInfo.roomName);
     localStorage.setItem("id", mbInfo.id);
@@ -149,7 +148,6 @@ function OnPageLeave() {
 
 function OnReconnect() {
   createWS("austindoes.work/ws", "");
-  console.log("reconnectin");
 
   ws.onopen = function(e) {
     ws.onmessage = function(e) {
@@ -157,6 +155,7 @@ function OnReconnect() {
     }
 
     rejoinRoom();
+    localStorage.clear();
     CheckRoomJoin(5);
   }
 }

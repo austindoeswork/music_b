@@ -36,7 +36,7 @@ type PlayerCommand struct {
 // { "Command": "asdfasdf", "Body":["asdfasdf asdd"]}
 func (p *Player) listenWS() {
 	defer func() {
-		p.c.EndParty(p.party)
+		p.c.EndOpenParty(p.party)
 		p.conn.Close()
 	}()
 	for {
@@ -51,9 +51,9 @@ func (p *Player) listenWS() {
 			log.Println("error unmarshalling command (" + p.party + ")")
 			continue
 		}
-		fmt.Println("ws: (" + p.party + ") " + cmd.Command + " : " + strings.Join(cmd.Body, " "))
 		switch cmd.Command {
 		case "join":
+			fmt.Println("ws: (" + p.party + ") " + cmd.Command + " : " + strings.Join(cmd.Body, " "))
 			if len(cmd.Body) > 0 {
 				partyName := cmd.Body[0]
 				encodedName := p.c.GetEncodedName(partyName)
@@ -73,6 +73,29 @@ func (p *Player) listenWS() {
 				continue
 			} else {
 				p.respond("join", "FAIL", "Please Provide A Name")
+				continue
+			}
+		case "rejoin":
+			fmt.Println("ws: (" + p.party + ") " + cmd.Command + " : " + strings.Join(cmd.Body, " "))
+			if len(cmd.Body) > 0 {
+				partyName := cmd.Body[0]
+				encodedName := p.c.GetEncodedName(partyName)
+				exists := p.c.PartyExists(partyName)
+
+				if !exists {
+					p.respond("rejoin", "FAIL", "party DNE")
+					continue
+				} else {
+					p.party = encodedName
+					p.respond("rejoin", partyName)
+				}
+				err = p.c.AddPlayer(encodedName, p.id)
+				if err != nil {
+					log.Println("error adding player to cache")
+				}
+				continue
+			} else {
+				p.respond("rejoin", "FAIL", "Please Provide A Name")
 				continue
 			}
 		case "id":
@@ -96,7 +119,7 @@ func (p *Player) listenWS() {
 				continue
 			} else {
 				p.respond("get", songs...)
-				fmt.Println("(get) sending: " + strings.Join(songs, " "))
+				// fmt.Println("(get) sending: " + strings.Join(songs, " "))
 				continue
 			}
 		case "next":
@@ -111,7 +134,7 @@ func (p *Player) listenWS() {
 				continue
 			} else {
 				p.respond("next", songs...)
-				fmt.Println("(next) sending: " + strings.Join(songs, " "))
+				// fmt.Println("(next) sending: " + strings.Join(songs, " "))
 				continue
 			}
 		case "length":
@@ -121,7 +144,7 @@ func (p *Player) listenWS() {
 				continue
 			}
 			p.respond("length", strconv.Itoa(len(songs)))
-			fmt.Println("(length) sending: " + strconv.Itoa(len(songs)))
+			// fmt.Println("(length) sending: " + strconv.Itoa(len(songs)))
 			continue
 		default:
 		}

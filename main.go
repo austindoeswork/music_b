@@ -99,7 +99,7 @@ func addMessageRoutes(r *router.MessageRouter, c *cache.Cache, d *downloader.YTD
 	r.AddRoute(".parties", handler.NewGetPartiesHandler(c))
 	r.AddRoute(".status", handler.NewStatusHandler(c))
 	r.AddRoute(".skip", handler.NewSkipHandler(c, com))
-	r.AddRoute(".play", handler.NewAddSongHandler(c, d))
+	r.AddRoute(".add", handler.NewAddSongHandler(c, d))
 }
 
 func easterEggs(msg listener.Message) {

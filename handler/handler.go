@@ -226,7 +226,7 @@ func (h *SkipHandler) Handle(msg listener.Message) {
 
 const (
 	commandList = `.help: display this list
-.play <song query>:	add a song to queue
+.add <song query>:	add a song to queue
 .parties: list all parties
 .join <party name>: start controlling a party
 .status: what's happening?

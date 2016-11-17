@@ -52,15 +52,11 @@ func NewYTDownloader(c *cache.Cache, dir string) (*YTDownloader, error) {
 	}
 
 	go func() {
-		ticker := time.NewTimer(time.Minute * 5)
-		for {
-			select {
-			case <-ticker.C:
-				fmt.Println("DOWNLOADER: clean up starting...")
-				err := downloader.Clean()
-				if err != nil {
-					log.Println(err.Error())
-				}
+		for x := range time.Tick(time.Minute * 3) {
+			fmt.Println("DOWNLOADER: clean up starting... " + x.String())
+			err := downloader.Clean()
+			if err != nil {
+				log.Println(err.Error())
 			}
 		}
 	}()

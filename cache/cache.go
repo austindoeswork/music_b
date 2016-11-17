@@ -1,8 +1,8 @@
 package cache
 
 import (
-	// "fmt"
 	"errors"
+	"fmt"
 	"regexp"
 	// "strconv"
 	"strings"
@@ -39,6 +39,7 @@ func (c *Cache) AddPlayer(partyName string, playerID string) error {
 		// c.mux.Unlock()
 		return NoPartyError{encodedName}
 	}
+	c.parties[encodedName].Close()
 	c.players[encodedName] = playerID
 	// c.mux.Unlock()
 	return nil
@@ -90,18 +91,55 @@ func (c *Cache) MakeParty(partyName string) (string, error) {
 	return partyName, nil
 }
 
-//TODO somehow send msg to connected threads
-func (c *Cache) EndParty(partyName string) error {
+func (c *Cache) PartyExists(partyName string) bool {
+	var encodedName string
+	encodedName = encodeName(partyName)
+
+	_, ok := c.parties[encodedName]
+	return ok
+}
+
+func (c *Cache) EndOpenParty(partyName string) error {
 	encodedName := encodeName(partyName)
 	// c.mux.Lock()
 	if _, ok := c.parties[encodedName]; !ok {
 		// c.mux.Unlock()
 		return NoPartyError{encodedName}
 	}
+
+	c.parties[encodedName].Open()
+
+	go func() {
+		fmt.Println("OPENED PARTY, WILL GET BACK TO YOU IN 30 SECONDS")
+		time.AfterFunc(time.Second*30, func() {
+			if c.parties[encodedName].IsOpen() {
+				c.EndParty(encodedName)
+				fmt.Println("CLOSED PARTY")
+			} else {
+				fmt.Println("DIDN'T CLOSE PARTY")
+			}
+		})
+	}()
+
+	return nil
+}
+
+//TODO somehow send msg to connected threads
+func (c *Cache) EndParty(partyName string) error {
+	encodedName := encodeName(partyName)
+	// c.mux.Lock()
+
+	//delete party
+	if _, ok := c.parties[encodedName]; !ok {
+		// c.mux.Unlock()
+		return NoPartyError{encodedName}
+	}
 	delete(c.parties, encodedName)
 
+	//delete player
 	c.DeletePlayer(encodedName)
 
+	//clear threads
 	toDelete := []string{}
 	for thread, party := range c.threads {
 		if party == encodedName {
@@ -112,6 +150,7 @@ func (c *Cache) EndParty(partyName string) error {
 		delete(c.threads, thread)
 	}
 	// c.mux.Unlock()
+
 	return nil
 }
 

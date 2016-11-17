@@ -43,6 +43,13 @@ routes messages and paths to respective function calls
 serves music from a directory
 
 ### TODO:
-- websocket party controller 
-- nicely show info about controller in play.html
-- proper logging
+- backend
+	- websocket party listener
+	- slack party listener
+	- proper logging
+	- rejoin controller
+- front end
+	- music control thru player page
+	- nicely show info about listeners in play.html
+	- mobile debugging/app
+	- ellipses animation

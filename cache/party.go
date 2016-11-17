@@ -10,6 +10,7 @@ type Party struct {
 	originalName string
 	encodedName  string
 	songs        []string
+	open         bool
 }
 
 func NewParty(name, encodedName string) *Party {
@@ -17,6 +18,7 @@ func NewParty(name, encodedName string) *Party {
 		name,
 		encodedName,
 		[]string{},
+		false,
 	}
 }
 
@@ -74,6 +76,16 @@ func (p *Party) OriginalName() string {
 
 func (p *Party) EncodedName() string {
 	return p.encodedName
+}
+
+func (p *Party) IsOpen() bool {
+	return p.open
+}
+func (p *Party) Open() {
+	p.open = true
+}
+func (p *Party) Close() {
+	p.open = false
 }
 
 //helpers

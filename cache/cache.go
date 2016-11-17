@@ -169,7 +169,9 @@ func (c *Cache) PopSong(partyName string) error {
 		return NoPartyError{encodedName}
 	}
 	song, _ := c.parties[encodedName].PopSong()
-	c.songs[song].Played()
+	if _, ok := c.songs[song]; ok {
+		c.songs[song].Played()
+	}
 	// c.mux.Unlock()
 	return nil
 }

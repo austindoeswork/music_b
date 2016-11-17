@@ -35,35 +35,30 @@ function AudioEndedHandler() {
   var audio = document.getElementById("audio");
   audio.pause();
 
-  if (playQueue.length == 0) {
-    if (qLength == "0") {
-      var button = document.getElementById("playButton");
-      button.src = "img/sad.png";
-      currentSongname = "No songs in queue :[";
-      OnSongNameChange();
-
-      if (gotFirst) {
-        nextSong();
-      } else {
-        requestSong();
-      }
-
-      checkQueueReady();
-      return;
-    } else {
-      console.log(playQueue);
-      var button = document.getElementById("playButton");
-      button.src = "img/elip.png";
-      currentSongname = "buffering, hold your horses";
-      OnSongNameChange();
-    }
+  if (playQueue.length != 0) {
+    // how did this happen?
+    return;
   }
 
+  if (qLength == "0") {
+    var button = document.getElementById("playButton");
+    button.src = "img/sad.png";
+    currentSongname = "No songs in queue :[";
+    OnSongNameChange();
 
-  gotFirst = true;
+    checkQueueReady();
+    return;
+  } else {
+    var button = document.getElementById("playButton");
+    button.src = "img/elip.png";
+    currentSongname = "buffering, hold your horses";
+    OnSongNameChange();
+    nextSong();
+  }
+
+  gotFirst = true; // only care about the first time this is set
 
   var source = document.getElementById("source");
-
   var srcUrl = playQueue.shift();
 
   var temp = srcUrl.split("/");

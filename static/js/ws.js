@@ -67,8 +67,6 @@ function getQueueLength() {
 function parseResponse(r) {
   res = JSON.parse(r);
 
-  console.log(r);
-
   if (res.Command == "skip") {
     AudioEndedHandler();
     return "skipped";

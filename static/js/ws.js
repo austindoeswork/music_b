@@ -59,6 +59,8 @@ function parseResponse(r) {
   } else if (res.Command == "join") {
     if (res.Body[0] != "FAIL") {
       createSuccess = true;
+      var partyText = "you're hosting \"" + res.Body[0] + "\"";
+      document.getElementById("partyName").innerHTML = partyText;
     }
     return res.Body[0];
   } else if (res.Command == "id") {

@@ -83,8 +83,8 @@ function BodyReadyHandler() {
 }
 
 function CheckRoomJoin(depth) {
-  // if (createSuccess) {
-  if (true) {
+   if (createSuccess) {
+   // if (true) {
     document.getElementById("createpage").style.display = 'none';
     document.getElementById("loading").style.display = 'none';
     document.getElementById("playerpage").style.display = 'block';

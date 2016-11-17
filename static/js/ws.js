@@ -1,6 +1,7 @@
 // Websocket Helpers
 var ws; // the websocket itself
 var createSuccess = false;
+var gotFirst = false;
 var mbInfo = {
   "roomName": "TylerTest",
   "id": "TylerTest"
@@ -19,6 +20,15 @@ function createWS(url, port) {
 function requestSong() {
   var msg = {
     Command: "get",
+    Body: [mbInfo.id]
+  };
+
+  ws.send(JSON.stringify(msg));
+}
+
+function nextSong() {
+  var msg = {
+    Command: "next",
     Body: [mbInfo.id]
   };
 
@@ -45,20 +55,20 @@ function getNameFromId(id) {
 
 function parseResponse(r) {
   res = JSON.parse(r);
-  console.log(res);
 
   if (res.Command == "skip") {
     AudioEndedHandler();
     return "skipped";
-  } else if (res.Command == "get") {
+  } else if (res.Command == "get" || res.Command == "next") {
+    console.log(res);
     if (res.Body[0] == "FAIL") {
       return "FAIL";
     }
-    
+
+    playQueue = [];
+
     for (var i = 0; i < res.Body.length; i++) {
-      if (playQueue.indexOf(res.Body[i]) == -1) {
-        playQueue.push("http://austindoes.work/song/" + res.Body[i]);
-      }
+      playQueue.push("http://austindoes.work/song/" + res.Body[i]);
     }
     return "got";
   } else if (res.Command == "join") {

@@ -24,12 +24,16 @@ function checkQueueReady() {
   if (playQueue.length > 0) {
     AudioEndedHandler();
   } else {
+    requestSong();
     window.setTimeout(checkQueueReady, 200);
   }
 }
 
 function AudioEndedHandler() {
   audioLoading = true;
+  audio.pause();
+
+  console.log(playQueue);
 
   if (playQueue.length == 0) {
     var button = document.getElementById("playButton");
@@ -37,32 +41,32 @@ function AudioEndedHandler() {
     currentSongname = "No songs in queue :[";
     OnSongNameChange();
 
-    requestSong();
+    if (gotFirst) {
+      nextSong();
+    } else {
+      requestSong();
+    }
+
     checkQueueReady();
     return;
   } else {
-    console.log(playQueue);
+    gotFirst = true;
     var button = document.getElementById("playButton");
     button.src = "img/elip.png";
     currentSongname = "buffering, hold your horses";
     OnSongNameChange();
-    return;
   }
 
   var audio = document.getElementById("audio");
   var source = document.getElementById("source");
 
-  playQueue.pop();
-  var srcUrl = playQueue[0];
+  var srcUrl = playQueue.shift();
 
   var temp = srcUrl.split("/");
   var ytid = temp[temp.length-1];
   getNameFromId(ytid);
 
-  requestSong();
-
   source.src = srcUrl;
-  audio.pause();
   audio.load();
   playAudio();
 }
@@ -88,7 +92,6 @@ function BodyReadyHandler() {
 
 function CheckRoomJoin(depth) {
    if (createSuccess) {
-   // if (true) {
     document.getElementById("createpage").style.display = 'none';
     document.getElementById("loading").style.display = 'none';
     document.getElementById("playerpage").style.display = 'block';
@@ -107,10 +110,11 @@ function CheckRoomJoin(depth) {
 }
 
 function TryCreatingRoom() {
-  var roomname = document.getElementById("submit").value;
+  var roomname = document.getElementById("partyNameInput").value;
   mbInfo.roomName = roomname;
   mbInfo.id = roomname
-  createWS("austindoes.work/ws", "");
+  createWS("austindoes.work/ws", "")
+
 
   ws.onopen = function(e) {
     ws.onmessage = function(e) {
@@ -120,7 +124,4 @@ function TryCreatingRoom() {
     createRoom();
     CheckRoomJoin(5);
   }
-
-
-  CheckRoomJoin(5);
 }

@@ -1,0 +1,10 @@
+#playButton {
+  position: relative;
+  animation-name: shwoop;
+  animation-duration: 1s;
+}
+
+#title, #canvas {
+  animation-name: shwoopFade;
+  animation-duration: 1.2s;
+}

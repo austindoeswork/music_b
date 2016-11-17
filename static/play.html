@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta lang="en-us">
+
+  <meta name="viewport" content="width=device-width, user-scalable=no" />
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/play.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.0.52/wavesurfer.min.js"></script>
+
+  <script src="js/waveform.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/ws.js"></script>
+  <script src="js/handlers.js"></script>
+
+  <script>
+    function BodyLoadHandler() {
+      document.getElementById("playButton").style.webkitAnimationPlayState = 'paused';
+      document.getElementById("title").style.webkitAnimationPlayState = 'paused';
+      document.getElementById("canvas").style.webkitAnimationPlayState = 'paused';
+
+      // window.onclick = function(e){
+      ws.onopen = function(e){
+        document.getElementById("loading").style.display = 'none';
+
+        document.getElementById("playButton").style.webkitAnimationPlayState = 'running';
+        document.getElementById("title").style.webkitAnimationPlayState = 'running';
+        document.getElementById("canvas").style.webkitAnimationPlayState = 'running';
+
+        BodyReadyHandler();
+        ws.onmessage = function(e) {
+          parseResponse(e.data);
+        }
+
+        createRoom();
+        requestSong();
+      }
+    }
+  </script>
+</head>
+
+<body onload="BodyLoadHandler();">
+  <div class="page">
+    <!--h1>$&nbsp;&nbsp;./music_b</h1-->
+    <h1 id="title">music_b</h1>
+    <h1 id="loading">Connecting to server...</h1>
+
+    <audio id="audio" onloadeddata="AudioLoadedHandler();">
+      Your browser does not support the <code>audio</code> element.
+      <source id="source" src="sfx/bongo.musicb" type="audio/wav">
+    </audio>
+
+    <canvas id="canvas"></canvas>
+
+    <img onclick="ButtonClickHandler();" class="button" id="playButton" src="img/play.png"/>
+  </div>
+</body>
+</html>

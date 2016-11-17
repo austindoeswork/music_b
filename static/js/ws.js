@@ -125,6 +125,8 @@ function parseResponse(r) {
     }
     return res.Body[0];
   } else if (res.Command == "terminate") {
-    // uh oh
+    localStorage.clear();
+    mbInfo = {};
+    window.location = "?kicked";
   }
 }

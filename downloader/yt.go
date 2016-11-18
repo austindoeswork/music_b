@@ -138,6 +138,7 @@ func ytQuery(query string, maxHits int) []string {
 	res, err := http.Get(ytSearchUrl + query)
 	if err != nil {
 		panic(err)
+		return nil
 	}
 	defer res.Body.Close()
 

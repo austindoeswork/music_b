@@ -69,22 +69,24 @@ func (d *YTDownloader) Clean() error {
 	if err != nil {
 		return err
 	}
+	deletedCount := 0
 	for _, song := range songs {
 		//TODO also delete old songs
 		if song.AddCount() == song.PlayCount() {
 			err = d.c.DeleteSong(song.ID())
 			if err != nil {
 				fmt.Println("DOWNLOADER: couldn't delete " + song.ID() + " from cache")
-				return err
+				continue
 			}
 			err = os.Remove(song.Path())
 			if err != nil {
 				fmt.Println("DOWNLOADER: couldn't delete " + song.ID() + " from filesystem")
-				return err
+				continue
 			}
-			fmt.Println("DOWNLOADER: deleted " + song.Path())
+			deletedCount++
 		}
 	}
+	fmt.Printf("DOWNLOADER: cleaned %d/%d songs.", deletedCount, len(songs))
 	return nil
 }
 

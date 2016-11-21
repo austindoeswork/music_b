@@ -36,6 +36,9 @@ func NewStatusHandler(c *cache.Cache) *StatusHandler {
 func NewClearHandler(c *cache.Cache) *ClearHandler {
 	return &ClearHandler{c}
 }
+func NewBingHandler() *BingHandler {
+	return &BingHandler{}
+}
 
 //TODO add commander object here when it's no longer global
 func NewSkipHandler(c *cache.Cache, com *commander.Commander) *SkipHandler {
@@ -50,6 +53,14 @@ type TestHandler struct {
 
 func (h *TestHandler) Handle(msg listener.Message) {
 	msg.Respond(fmt.Sprintf("usr: %s\ncmd: %s\nrest: %s\n", msg.UserName(), msg.Command(), msg.Text()))
+}
+
+//BINGHANDLER ====================
+type BingHandler struct {
+}
+
+func (h *BingHandler) Handle(msg listener.Message) {
+	msg.Respond(fmt.Sprintf("http://lmgtfy.com/?s=b&q=%s", strings.Replace(msg.Text(), " ", "+", -1)))
 }
 
 //HELPHANDLER ====================

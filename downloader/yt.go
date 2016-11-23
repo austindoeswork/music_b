@@ -2,7 +2,7 @@ package downloader
 
 import (
 	"errors"
-	"fmt"
+	// "fmt"
 	"log"
 	"net/http"
 	"os"
@@ -21,8 +21,6 @@ var (
 	ytSearchUrl = "https://www.youtube.com/results?search_query="
 	ytWatchUrl  = "https://www.youtube.com/watch?v="
 )
-
-//TODO make this clean itself up somehow
 
 type YTDownloader struct {
 	c   *cache.Cache
@@ -53,7 +51,7 @@ func NewYTDownloader(c *cache.Cache, dir string) (*YTDownloader, error) {
 
 	go func() {
 		for x := range time.Tick(time.Minute * 3) {
-			fmt.Println("DOWNLOADER: clean up starting... " + x.String())
+			log.Println("DOWNLOADER: clean up starting... " + x.String())
 			err := downloader.Clean()
 			if err != nil {
 				log.Println(err.Error())
@@ -72,21 +70,21 @@ func (d *YTDownloader) Clean() error {
 	deletedCount := 0
 	for _, song := range songs {
 		//TODO also delete old songs
-		if song.AddCount() == song.PlayCount() {
+		if song.AddCount() <= song.PlayCount() {
 			err = d.c.DeleteSong(song.ID())
 			if err != nil {
-				fmt.Println("DOWNLOADER: couldn't delete " + song.ID() + " from cache")
+				log.Println("DOWNLOADER: couldn't delete " + song.ID() + " from cache")
 				continue
 			}
 			err = os.Remove(song.Path())
 			if err != nil {
-				fmt.Println("DOWNLOADER: couldn't delete " + song.ID() + " from filesystem")
+				log.Println("DOWNLOADER: couldn't delete " + song.ID() + " from filesystem")
 				continue
 			}
 			deletedCount++
 		}
 	}
-	fmt.Printf("DOWNLOADER: cleaned %d/%d songs.", deletedCount, len(songs))
+	log.Printf("DOWNLOADER: cleaned %d/%d songs.\n", deletedCount, len(songs))
 	return nil
 }
 
@@ -95,16 +93,12 @@ func (d *YTDownloader) Clean() error {
 func (d *YTDownloader) FromQuery(query string) (string, string, string, time.Duration, error) {
 	vids := ytQuery(query, 1)
 
-	// for _, vid := range vids {
-	// fmt.Println(vid)
-	// }
-
 	if vids == nil {
-		return "", "", "", 0, errors.New("failed to get video")
+		return "", "", "", 0, errors.New("failed to find video")
 	}
 	vid := vids[0]
 	if s, err := d.c.GetSong(vid); err == nil {
-		fmt.Println("song exists")
+		// log.Println("song exists")
 		return vid, s.Path(), s.Title(), s.Length(), nil
 	}
 
@@ -124,10 +118,9 @@ func (d *YTDownloader) FromQuery(query string) (string, string, string, time.Dur
 		return "", "", "", 0, err
 	}
 
-	// log.Printf("Waiting for command to finish...")
 	errCode := cmd.Wait()
 
-	log.Printf("Command finished with error: %v", errCode)
+	log.Printf("DOWNLOADER: finished with error: %v", errCode)
 
 	return vid, filePath, v.Title, v.Duration, nil
 }
@@ -181,18 +174,3 @@ func ytQuery(query string, maxHits int) []string {
 	return nil
 
 }
-
-// func getBetween(input, from, til string) string {
-// for _, line := range strings.Split(input, "\n") {
-// if strings.Contains(line, from) {
-// continue
-// } else {
-// output := strings.SplitN(line, from, 1)[0]
-// println(strings.SplitN(line, from, 1)[0])
-// // output = strings.SplitN(output, til, 1)[0]
-// // output = strings.SplitN(output, til, 1)[0]
-// // return output
-// }
-// }
-// return ""
-// }

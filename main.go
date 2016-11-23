@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -11,8 +12,8 @@ import (
 	"github.com/austindoeswork/music_b/commander"
 	"github.com/austindoeswork/music_b/config"
 	"github.com/austindoeswork/music_b/downloader"
-	"github.com/austindoeswork/music_b/handler"
 	"github.com/austindoeswork/music_b/listener"
+	"github.com/austindoeswork/music_b/messagehandler"
 	"github.com/austindoeswork/music_b/router"
 	"github.com/austindoeswork/music_b/server"
 )
@@ -35,6 +36,7 @@ func main() {
 		return
 	}
 	fmt.Println("version: " + commithash)
+
 	//config
 	conf, err := config.Parse(*configFlag)
 	if err != nil {
@@ -61,6 +63,7 @@ func main() {
 	//downloader
 	ytd, err := downloader.NewYTDownloader(c, conf.MusicDir)
 	if err != nil {
+		log.Println(err.Error())
 		fmt.Println("DOWNLOADER: failed.")
 		return
 	}
@@ -92,16 +95,16 @@ func main() {
 }
 
 func addMessageRoutes(r *router.MessageRouter, c *cache.Cache, d *downloader.YTDownloader, com *commander.Commander) {
-	r.AddRoute(".test", handler.NewTestHandler())
-	r.AddRoute(".help", handler.NewHelpHandler())
-	r.AddRoute(".clear", handler.NewClearHandler(c))
-	r.AddRoute(".join", handler.NewJoinPartyHandler(c))
-	r.AddRoute(".parties", handler.NewGetPartiesHandler(c))
-	r.AddRoute(".status", handler.NewStatusHandler(c))
-	r.AddRoute(".skip", handler.NewSkipHandler(c, com))
-	r.AddRoute(".add", handler.NewAddSongHandler(c, d))
-	r.AddRoute(".play", handler.NewAddSongHandler(c, d))
-	r.AddRoute(".lmbtfy", handler.NewBingHandler())
+	r.AddRoute("test", messagehandler.NewTestHandler())
+	r.AddRoute("help", messagehandler.NewHelpHandler())
+	r.AddRoute("clear", messagehandler.NewClearHandler(c))
+	r.AddRoute("join", messagehandler.NewJoinPartyHandler(c))
+	r.AddRoute("parties", messagehandler.NewGetPartiesHandler(c))
+	r.AddRoute("status", messagehandler.NewStatusHandler(c))
+	r.AddRoute("skip", messagehandler.NewSkipHandler(c, com))
+	r.AddRoute("add", messagehandler.NewAddSongHandler(c, d))
+	r.AddRoute("play", messagehandler.NewAddSongHandler(c, d))
+	r.AddRoute("lmbtfy", messagehandler.NewBingHandler())
 }
 
 func easterEggs(msg listener.Message) {

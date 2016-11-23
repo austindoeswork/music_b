@@ -6,6 +6,7 @@ package facebook
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -40,8 +41,9 @@ func NewMessage(userID, userName, threadID, fulltext string, isGroup bool, fb *F
 	}
 }
 
+//parse takes in the raw string, then returns the command, the flags and the rest of the msg
 func parse(fulltext string) (string, map[string]bool, string) {
-	if len(fulltext) == 0 {
+	if len(fulltext) < 2 {
 		return "", nil, ""
 	}
 
@@ -51,7 +53,7 @@ func parse(fulltext string) (string, map[string]bool, string) {
 
 	words := strings.Split(fulltext, " ")
 
-	if words[0][0] == '.' {
+	if words[0][0] == '.' || words[0][0] == '/' || words[0][0] == '!' {
 		if len(words[0]) == 1 && len(words) >= 2 {
 			command = strings.Join(words[:2], "")
 			words = words[2:]
@@ -59,6 +61,7 @@ func parse(fulltext string) (string, map[string]bool, string) {
 			command = words[0]
 			words = words[1:]
 		}
+		command = command[1:]
 	} else {
 		return "", nil, fulltext
 	}
@@ -75,7 +78,6 @@ func parse(fulltext string) (string, map[string]bool, string) {
 	remainingText = strings.Join(words[words_i:], " ")
 
 	return strings.ToLower(command), flags, remainingText
-
 }
 
 func (m *FBMessage) Respond(text string) error {
@@ -191,13 +193,13 @@ func (f *Facebook) Send(threadID string, isGroup bool, text string) error {
 func (f *Facebook) saveSession() {
 	data, err := f.sesh.DumpSession()
 	if err != nil {
-		fmt.Println("FB: Failed to save session:", err.Error())
+		log.Println("FB: Failed to save session:", err.Error())
 		return
 	}
 
 	//TODO smarter opening files
 	err = ioutil.WriteFile(f.sessionPath, data, 0644)
 	if err != nil {
-		fmt.Println("FB: Failed to write session to file:" + err.Error())
+		log.Println("FB: Failed to write session to file:" + err.Error())
 	}
 }

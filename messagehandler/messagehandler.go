@@ -1,4 +1,4 @@
-package handler
+package messagehandler
 
 import (
 	// "errors"
@@ -11,7 +11,7 @@ import (
 	"github.com/austindoeswork/music_b/listener"
 )
 
-type Handler interface {
+type MessageHandler interface {
 	Handle(msg listener.Message)
 }
 
@@ -39,8 +39,6 @@ func NewClearHandler(c *cache.Cache) *ClearHandler {
 func NewBingHandler() *BingHandler {
 	return &BingHandler{}
 }
-
-//TODO add commander object here when it's no longer global
 func NewSkipHandler(c *cache.Cache, com *commander.Commander) *SkipHandler {
 	return &SkipHandler{c, com}
 }

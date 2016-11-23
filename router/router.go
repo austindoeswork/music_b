@@ -1,21 +1,21 @@
 package router
 
 import (
-	"github.com/austindoeswork/music_b/handler"
 	"github.com/austindoeswork/music_b/listener"
+	"github.com/austindoeswork/music_b/messagehandler"
 )
 
 type MessageRouter struct {
-	routes map[string]handler.Handler
+	routes map[string]messagehandler.MessageHandler
 }
 
 func NewMessageRouter() *MessageRouter {
 	return &MessageRouter{
-		make(map[string]handler.Handler),
+		make(map[string]messagehandler.MessageHandler),
 	}
 }
 
-func (r *MessageRouter) AddRoute(command string, h handler.Handler) {
+func (r *MessageRouter) AddRoute(command string, h messagehandler.MessageHandler) {
 	r.routes[command] = h
 }
 

@@ -53,3 +53,12 @@ serves music from a directory
 	- nicely show info about listeners in play.html
 	- mobile debugging/app
 	- ellipses animation
+
+### FEATURE REQUESTS
+- fuck "someone"
+- suggest
+- mobile app
+- remove by number in q
+- killmeme
+- remove . commands
+- keep history

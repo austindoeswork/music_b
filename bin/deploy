@@ -1,0 +1,4 @@
+#!/bin/bash
+
+GOOS=linux go build .
+scp ./music_b austindoes.work:~/

@@ -15,6 +15,7 @@ type Config struct {
 	Secure        bool
 	SSLCert       string
 	SSLKey        string
+	StaticDir     string
 }
 
 var (
@@ -62,6 +63,7 @@ func Example() string {
 		Secure:        false,
 		SSLCert:       "cert.pem",
 		SSLKey:        "key.pem",
+		StaticDir:     "./static",
 	}
 	return c.String()
 }

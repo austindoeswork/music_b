@@ -33,6 +33,7 @@ func (s *Server) Start() error {
 
 	// assign handlers
 	http.HandleFunc("/test", s.TestHandler)
+	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(c.StaticDir))))
 
 	// start server
 	log.Printf("blastoff @ %s\n", c.ServerAddress)

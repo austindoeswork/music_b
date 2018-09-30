@@ -1,1 +1,75 @@
+<<<<<<< HEAD
 hello world
+=======
+<!DOCTYPE html >
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta lang="en-us">
+
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/play.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+
+    <link rel="icon" href="img/favicon.png">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.0.52/wavesurfer.min.js"></script>
+    <script src="https://use.fontawesome.com/0f92278437.js"></script>
+
+    <script src="js/state.js"></script>
+    <script src="js/waveform.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/ws.js"></script>
+    <script src="js/handlers.js"></script>
+
+    <script>
+      window.onresize = OnBodyResize;
+      window.onunload = OnPageLeave;
+
+      // Set up the app state / references to various html elements
+      function init() {
+        initState();
+        initWs();
+
+        //TODO: attempt to reconnect
+      }
+    </script>
+  </head>
+
+  <body onload="init();">
+    <div class="page" id="splash">
+      <h2 id="splash-title">create a party</h2>
+
+      <input id="partyNameInput" type="text" placeholder="name your party">
+
+      <button id="partyNameSubmit" class="submit">
+        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+      </button>
+
+      <p id="splash-fail"></p>
+    </div>
+
+    <div class="page" id="host">
+      <h2 id="host-title">music_b</h2>
+      <h1 id="play-loading">connecting to server...</h1>
+
+      <audio id="audio" onloadeddata="AudioLoadedHandler();">
+        Your browser does not support the <code>audio</code> element.
+        <source id="source" src="sfx/bongo.musicb" type="audio/wav">
+      </audio>
+
+      <canvas id="canvas"></canvas>
+
+      <img onclick="ButtonClickHandler();" class="button" id="playButton" src="img/logo.png"/>
+
+      <p id="host-partyName">you're hosting "a party"</p>
+      <p id="host-songName">welcome to music_b</p>
+    </div>
+
+    <div class="page" id="client"></div>
+  </body>
+</html>
+>>>>>>> c8784c1... transfer over old front end code, move over to new state management system

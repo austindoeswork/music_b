@@ -1,0 +1,147 @@
+/* General-purpose CSS here */
+
+/* custom properties */
+:root {
+
+  /* Color definitions */
+  --yellow: #E7F268;
+  --purple: #7368F2;
+  --red:    #EE1111;
+  --pink:   #F268A2;
+  --green:  #68F2B8;
+  --blue:   #1111EE;
+
+  --white:      #EEEEEE;
+  --light-gray: #C9C9C9;
+  --gray:       #707070;
+  --dark-gray:  #303030;
+  --black:      #1E1E1E;
+
+  /* Color Scheme */
+  --text-color-heading: var(--yellow);
+  --text-color-main:    var(--purple);
+  --text-color-dark:    var(--black);
+  --bg-color-main:      var(--dark-gray);
+
+  --button-border-color: var(--gray);
+  --button-bg-color:     var(--dark-gray);
+  --button-text-color:   var(--yellow);
+
+  /* Size definitions */
+
+  --page-width: 100vw;
+  --page-height: 100vh;
+}
+
+@media (max-width: 500px) {
+  :root {
+    /* Fonts */
+    --font-size-title: 15vmin;
+    --font-size-text: 5vmin;
+
+    /* header */
+    --heading-margin-top: 10vmin;
+
+    /* play button */
+    --button-size: 50vmin;
+    --button-offset: calc(var(--button-size) / 2 + 2vmin);
+
+
+    --pmargin: 20vmin;
+  }
+}
+
+@media (min-width: 501px) {
+  :root {
+    /* Fonts */
+    --font-size-title: 10vmin;
+    --font-size-text: 5vmin;
+
+    /* header */
+    --heading-margin-top: 10vmin;
+
+    /* play button */
+    --button-size: 25vmin;
+    --button-offset: calc(var(--button-size) / 2 + 1vmin);
+
+    --pmargin: 10vmin;
+  }
+}
+
+#playerpage {
+  display: none;
+}
+
+h1, h2, h3 {
+  color: var(--heading-color);
+}
+
+
+h1 {
+  font-size: var(--font-size-title);
+  width: 100%;
+  text-align: center;
+  float: left;
+  position: relative;
+  top: var(--heading-margin-top);
+}
+
+h2 {
+  width: 100%;
+  text-align: center;
+  margin-top: 25vh;
+  font-size: 13vmin;
+}
+
+input {
+  font-family: 'Montserrat', sans-serif;
+  font-size: var(--font-size-text);
+  padding: 5px;
+}
+
+.fa-arrow-right {
+  vertical-align: middle;
+}
+
+#fail {
+  display: none;
+  width: 100%;
+  text-align: center;
+  color: #ee1111;
+}
+
+.submit {
+  background-color: var(--bg-color-main);
+  margin-top: 5vmin;
+  font-size: 10vmin;
+  border: none;
+  padding-bottom: 10px;
+}
+
+div, p, .submit {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--text-color-main);
+}
+
+input {
+  color: var(--text-color-dark);
+}
+
+body {
+  background-color: var(--bg-color-main);
+}
+
+div.page {
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: 100vw;
+  height: 95vh;
+  overflow: hidden;
+}
+
+p {
+  width: 100%;
+  font-size: var(--font-size-text);
+  text-align: center;
+  margin-top: var(--pmargin);
+}

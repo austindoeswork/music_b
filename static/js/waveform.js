@@ -41,7 +41,8 @@ function draw (analyser) {
   canvasCtx.fillStyle = 'rgba(48, 48, 48, 1)';
   canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
   canvasCtx.lineWidth = 2;
-  canvasCtx.strokeStyle = 'rgb(255, 160, 64)';
+  // canvasCtx.strokeStyle = 'rgb(255, 160, 64)';
+  canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
 
   canvasCtx.beginPath();
 

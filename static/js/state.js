@@ -141,7 +141,7 @@ function host_swappado (to) {
     old = get('render.host.songInfo');
     yung = get('render.host.control');
 
-    get('render.host.swappyIcon').classList.toggle('fa-calculator', false);
+    get('render.host.swappyIcon').classList.toggle('fa-plus', false);
     get('render.host.swappyIcon').classList.toggle('fa-music', true);
 
     get('render.host.controller').focus();
@@ -149,7 +149,7 @@ function host_swappado (to) {
     old = get('render.host.control');
     yung = get('render.host.songInfo');
 
-    get('render.host.swappyIcon').classList.toggle('fa-calculator', true);
+    get('render.host.swappyIcon').classList.toggle('fa-plus', true);
     get('render.host.swappyIcon').classList.toggle('fa-music', false);
   }
 

@@ -8,6 +8,8 @@
 
   animation-name: shwoop;
   animation-duration: 1s;
+
+  filter: saturate(0) brightness(1.6);
 }
 
 #host #title, #host #canvas, #host p, #host .footer > i {

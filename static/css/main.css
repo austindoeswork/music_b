@@ -12,7 +12,8 @@
   --blue:   #1111EE;
   --orange: #F39500;
 
-  --white:      #EEEEEE;
+  --white:      #FFFFFF;
+  --off-white:  #B7B7B7;
   --light-gray: #C9C9C9;
   --gray:       #707070;
   --dark-gray:  #303030;
@@ -20,8 +21,8 @@
 
   /* Color Scheme */
   --text-color-heading: var(--yellow);
-  --text-color-main:    var(--purple);
-  --text-color-pressed: var(--orange);
+  --text-color-main:    var(--white);
+  --text-color-pressed: var(--Light-gray);
   --text-color-dark:    var(--black);
   --bg-color-main:      var(--dark-gray);
 
@@ -80,7 +81,14 @@
 }
 
 input {
-  color: var(--text-color-dark);
+  background: var(--dark-gray);
+  border: 1px solid white;
+  border-radius: 5px;
+  color: var(--white);
+}
+
+input::placehodler {
+  color: var(--off-white);
 }
 
 h1, h2, h3 {
@@ -148,7 +156,7 @@ div.page {
   bottom: 10px;
   opacity: 1;
 
-  color: var(--green);
+  color: var(--white);
 
   animation-name: mypeopleneedme;
   animation-duration: 1s;

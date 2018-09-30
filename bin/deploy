@@ -1,5 +1,9 @@
 #!/bin/bash
 
 GOOS=linux go build .
-scp ./music_b austindoes.work:~/
 scp -r ./static austindoes.work:~/
+ssh -t austindoes.work 'sudo killall -9 music_b'
+
+scp ./music_b austindoes.work:~/
+
+echo "now ssh in and start the server (TODO make it automatically run in the background)"

@@ -1,5 +1,21 @@
 # music_b
 
+### install:
+
+- `cd $GOPATH/src/github.com/austindoeswork/`
+- `git clone https://github.com/austindoeswork/music_b.git`
+
+### dependencies:
+
+go packages
+
+- `go get`
+
+youtube-dl
+
+- `sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl`
+- `sudo chmod a+rx /usr/local/bin/youtube-dl`
+
 ### setting up:
 
 get ssl cert/key for https (only if running https locally)
@@ -10,6 +26,8 @@ get ssl cert/key for https (only if running https locally)
 - `openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650`
 - should create
 	- `server.crt` and `server.key`
+
+
 
 create a config
 
@@ -37,5 +55,5 @@ remote_address: `austindoes.work`
 - ensure server is not running
 - `./bin/deploy`
 - `ssh austindoes.work`
-- `sudo ~/music_b`
+- `$user@austindoeswork> sudo ~/music_b`
 

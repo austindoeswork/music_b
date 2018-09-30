@@ -2,14 +2,15 @@
 
 /* custom properties */
 :root {
-
   /* Color definitions */
   --yellow: #E7F268;
   --purple: #7368F2;
+  --durple: #5348C2; /* dark purple */
   --red:    #EE1111;
   --pink:   #F268A2;
   --green:  #68F2B8;
   --blue:   #1111EE;
+  --orange: #F39500;
 
   --white:      #EEEEEE;
   --light-gray: #C9C9C9;
@@ -20,6 +21,7 @@
   /* Color Scheme */
   --text-color-heading: var(--yellow);
   --text-color-main:    var(--purple);
+  --text-color-pressed: var(--orange);
   --text-color-dark:    var(--black);
   --bg-color-main:      var(--dark-gray);
 
@@ -72,10 +74,19 @@
   display: none;
 }
 
-h1, h2, h3 {
-  color: var(--heading-color);
+* {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--text-color-main);
 }
 
+input {
+  color: var(--text-color-dark);
+}
+
+h1, h2, h3 {
+  color: var(--heading-color);
+  font-weight: bold;
+}
 
 h1 {
   font-size: var(--font-size-title);
@@ -93,38 +104,12 @@ h2 {
   font-size: 13vmin;
 }
 
-input {
-  font-family: 'Montserrat', sans-serif;
-  font-size: var(--font-size-text);
-  padding: 5px;
-}
-
-.fa-arrow-right {
-  vertical-align: middle;
-}
-
-#fail {
-  display: none;
+p {
   width: 100%;
+  font-size: var(--font-size-text);
+  font-weight: bold;
   text-align: center;
-  color: #ee1111;
-}
-
-.submit {
-  background-color: var(--bg-color-main);
-  margin-top: 5vmin;
-  font-size: 10vmin;
-  border: none;
-  padding-bottom: 10px;
-}
-
-div, p, .submit {
-  font-family: 'Montserrat', sans-serif;
-  color: var(--text-color-main);
-}
-
-input {
-  color: var(--text-color-dark);
+  margin-top: var(--pmargin);
 }
 
 body {
@@ -137,11 +122,19 @@ div.page {
   max-width: 100vw;
   height: 95vh;
   overflow: hidden;
+
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
 }
 
-p {
-  width: 100%;
-  font-size: var(--font-size-text);
-  text-align: center;
-  margin-top: var(--pmargin);
+div.page.hidden {
+  display: none;
+}
+
+.rotatedOut {
+  opacity: 0;
+
+  animation-duration: 0.25s;
+  animation-name: rotato;
 }

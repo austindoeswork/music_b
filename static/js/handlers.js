@@ -17,7 +17,7 @@ function AudioLoadedHandler() {
 }
 
 function checkQueueReady() {
-  if (playQueue.length > 0) {
+  if (get('play.queue').length > 0) {
     AudioEndedHandler();
   } else {
     getQueueLength();
@@ -44,17 +44,17 @@ function AudioEndedHandler() {
   var audio = document.getElementById("audio");
   audio.pause();
 
-  if (playQueue.length == 0 ) {
+  if (get('play.queue.length').length == 0 ) {
     getQueueLength();
-    if (qLength == "0") {
+    if (get('play.qLength') == "0") {
       var button = document.getElementById("playButton");
       button.src = "img/sad.png";
-      currentSongname = "No songs in queue :[";
+      set('play.currentSongname', "No songs in queue :[");
       OnSongNameChange();
     } else {
       var button = document.getElementById("playButton");
       button.src = "img/elip.png";
-      currentSongname = "buffering, hold your horses";
+      set('play.currentSongname', "buffering, hold your horses")
       OnSongNameChange();
     }
 
@@ -65,7 +65,7 @@ function AudioEndedHandler() {
   gotFirst = true; // only care about the first time this is set
 
   var source = document.getElementById("source");
-  var srcUrl = playQueue.shift();
+  var srcUrl = get('play.queue').shift();
 
   var temp = srcUrl.split("/");
   var ytid = temp[temp.length-1];

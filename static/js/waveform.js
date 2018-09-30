@@ -35,7 +35,7 @@ function draw (analyser) {
   }
 
   // clear the canvas, set stroke
-  const canvas = get('render.play.canvas');
+  const canvas = get('render.host.canvas');
   const canvasCtx = canvas.getContext('2d');
 
   canvasCtx.fillStyle = 'rgba(48, 48, 48, 1)';
@@ -57,8 +57,8 @@ function draw (analyser) {
   const fdx = (points[0].x + points[i+1].x)/2;
   const fdy = (points[0].y + points[i+1].y)/2;
 
-  canvasCtx.quadraticCurveTo(points[i+1].x, points[i+1].y, fxc, fyc);
-  canvasCtx.quadraticCurveTo(points[0].x, points[0].y, fxc, fyc);
+  canvasCtx.quadraticCurveTo(points[i+1].x, points[i+1].y, fdx, fdy);
+  canvasCtx.quadraticCurveTo(points[0].x, points[0].y, fdx, fdy);
 
   canvasCtx.stroke();
 };

@@ -27,3 +27,16 @@
     opacity: 1;
   }
 }
+
+@keyframes rotato {
+  0% {
+    bottom: 10vh;
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+  100% {
+    bottom: 20vh;
+    transform: rotateX(90deg);
+    opacity: 0;
+  }
+}

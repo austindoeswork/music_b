@@ -1,22 +1,21 @@
-#playButton {
+#host #playButton {
+  width: var(--button-size);
+  height: var(--button-size);
+
+  display: block;
   position: relative;
+  margin-top: calc(50vh - var(--button-size) / 2 - 13vh - 10vh);
+
   animation-name: shwoop;
   animation-duration: 1s;
 }
 
-#title, #canvas, p {
+#host #title, #host #canvas, #host p, #host .footer > i {
   animation-name: shwoopFade;
   animation-duration: 1.2s;
 }
 
-.button {
-  width: var(--button-size);
-  height: var(--button-size);
-  margin: calc(50vh - var(--button-offset)) auto 0 auto;
-  display: block;
-}
-
-canvas {
+#host canvas {
   width: 100vw;
   height: 100vh;
   position: absolute;
@@ -25,11 +24,59 @@ canvas {
   z-index: -1;
 }
 
-#songName {
-  margin-top: 5vmin;
+#host p#host-title {
+  margin-top: 10vh;
+  font-size: 12vh;
+  height: 13vh;
+  overflow: hidden;
 }
 
-.fa-times {
-  vertical-align: middle;
-  color: #ee5555;
+#host #host-control, #host #host-song-info {
+  display: block;
+}
+
+#host p {
+  margin-top: 0;
+}
+
+#host .footer {
+  position: absolute;
+  bottom: 10vh;
+}
+
+#host .footer > i {
+  position: absolute;
+  font-size: 4vmin;
+  top: 2vmin;
+  right: -12vmin;
+}
+#host .footer > i.fa-music {
+  right: -11vmin;
+}
+
+#host i:hover {
+  color: var(--text-color-pressed);
+}
+
+
+#host #host-control {
+  position: absolute;
+  top: 3vmin;
+
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+#host #host-control-input {
+  font-size: 22px;
+  width: 300px;
+  padding: 6px 10px;
+}
+#host #host-control-input {
+  flex-grow: 1;
+}
+#host #host-control > i {
+  font-size: 5vmin;
+  margin-left: 2vmin;
 }

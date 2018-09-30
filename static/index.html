@@ -1,16 +1,17 @@
-<<<<<<< HEAD
-hello world
-=======
 <!DOCTYPE html >
 <html lang="en">
   <head>
+    <title>music_b</title>
+
     <meta charset="utf-8">
     <meta lang="en-us">
 
     <meta name="viewport" content="width=device-width, user-scalable=no" />
 
+    <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/play.css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
 
@@ -25,16 +26,29 @@ hello world
     <script src="js/ws.js"></script>
     <script src="js/handlers.js"></script>
 
-    <script>
-      window.onresize = OnBodyResize;
-      window.onunload = OnPageLeave;
+    <script type="text/javascript">
+      // window.onresize = OnBodyResize;
+      // window.onunload = OnPageLeave;
 
       // Set up the app state / references to various html elements
-      function init() {
+      function init () {
         initState();
-        initWs();
+        initWs('127.0.0.1', '8100');
 
         //TODO: attempt to reconnect
+      }
+
+      function tryCreateRoom () {
+        const roomName = get('render.home.input').value;
+        console.log(roomName);
+
+        window.history.pushState(null, 'music_b', '#/host/' + roomName);
+        changePage(window.location.hash);
+      }
+
+      function queueSong () {
+        const query = get('render.host.controller').value;
+        requestSong(query);
       }
     </script>
   </head>
@@ -43,18 +57,28 @@ hello world
     <div class="page" id="splash">
       <h2 id="splash-title">create a party</h2>
 
-      <input id="partyNameInput" type="text" placeholder="name your party">
+      <span>
+        <input
+          id="partyNameInput"
+          type="text"
+          placeholder="name your party"
+          onkeydown="if (event.key == 'Enter') { tryCreateRoom(); }"
+        >
 
-      <button id="partyNameSubmit" class="submit">
-        <i class="fa fa-arrow-right" aria-hidden="true"></i>
-      </button>
+        <button
+          id="partyNameSubmit"
+          class="submit"
+          onclick="tryCreateRoom();"
+        >
+          <i class="fa fa-arrow-right" aria-hidden="true"></i>
+        </button>
 
-      <p id="splash-fail"></p>
+        <p id="splash-fail"></p>
+      </span>
     </div>
 
-    <div class="page" id="host">
-      <h2 id="host-title">music_b</h2>
-      <h1 id="play-loading">connecting to server...</h1>
+    <div class="page hidden" id="host">
+      <p id="host-title">music_b</p>
 
       <audio id="audio" onloadeddata="AudioLoadedHandler();">
         Your browser does not support the <code>audio</code> element.
@@ -62,14 +86,33 @@ hello world
       </audio>
 
       <canvas id="canvas"></canvas>
+      <img class="button" id="playButton" src="img/logo.png"/>
 
-      <img onclick="ButtonClickHandler();" class="button" id="playButton" src="img/logo.png"/>
+      <span class="footer">
+        <i
+          id="swappy-icon"
+          class="fa fa-calculator"
+          aria-hidden="true"
+          onclick="host_swappado();"
+        ></i>
 
-      <p id="host-partyName">you're hosting "a party"</p>
-      <p id="host-songName">welcome to music_b</p>
+        <span id="host-song-info">
+          <p id="host-partyName">connecting to server...</p>
+          <p id="host-songName">welcome to music_b</p>
+        </span>
+
+        <span id="host-control" class="rotatedOut">
+          <input
+            id="host-control-input"
+            type="text"
+            placeholder="add a song to the queue"
+            onkeydown="if (event.key == 'Enter') { queueSong(); }"
+          >
+          <i class="fa fa-arrow-right" aria-hidden="true"></i>
+        </span>
+      </span>
     </div>
 
-    <div class="page" id="client"></div>
+    <div class="page hidden" id="client"></div>
   </body>
 </html>
->>>>>>> c8784c1... transfer over old front end code, move over to new state management system

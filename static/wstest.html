@@ -1,0 +1,43 @@
+<!DOCTYPE html >
+<html lang="en">
+  <head>
+
+    <style>
+      body {
+        display: flex;
+        flex-flow: column nowrap;
+      }
+
+      input {
+        margin-bottom: 25px;
+        font-size: 18px;
+      }
+    </style>
+
+    <script type="text/javascript">
+      var ws = new WebSocket('ws://example.com');
+
+      function updateUrl (url) {
+        ws = new WebSocket(`ws://${url}`);
+      }
+
+      function sendws (msg) {
+        ws.send(msg);
+      }
+    </script>
+  </head>
+
+  <body>
+    <input
+      type="text"
+      placeholder="update ws url (include port)"
+      onkeydown="if (event.key == 'Enter') { updateUrl(event.target.value); }"
+    >
+
+    <input
+      type="text"
+      placeholder="send a message"
+      onkeydown="if (event.key == 'Enter') { sendws(event.target.value); }"
+    >
+  </body>
+</html>

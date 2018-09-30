@@ -54,6 +54,13 @@
   right: -11vmin;
 }
 
+#host #host-songName {
+  width: unset;
+}
+#host .footer i#skippy-dippy-doo {
+  margin-left: 2vmin;
+}
+
 #host i:hover {
   color: var(--text-color-pressed);
 }

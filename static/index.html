@@ -28,7 +28,7 @@
     <script src="js/handlers.js"></script>
 
     <script type="text/javascript">
-      // window.onresize = OnBodyResize;
+      window.onresize = OnBodyResize;
       // window.onunload = OnPageLeave;
 
       // Set up the app state / references to various html elements
@@ -46,6 +46,10 @@
       }
 
       function queueSong () {
+        if (get('render.host.mode') != 'controller') {
+          return;
+        }
+
         const trolo = get('render.host.controller')
         const query = trolo.value;
         trolo.value = '';
@@ -107,7 +111,15 @@
 
         <span id="host-song-info">
           <p id="host-partyName">you're hosting "a party"</p>
-          <p id="host-songName">welcome to music_b</p>
+          <span class="flex-row">
+            <p id="host-songName">welcome to music_b</p>
+            <i
+              id="skippy-dippy-doo"
+              class="fa fa-forward hidden"
+              aria-hidden="true"
+              onclick="skipSong();"
+            ></i>
+          </span>
         </span>
 
         <span id="host-control" class="rotatedOut">

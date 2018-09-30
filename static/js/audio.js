@@ -9,3 +9,7 @@ function pauseAudio () {
   get('render.host.audio').pause();
   get('render.host.button').src = 'img/play.png';
 }
+
+function skipSong () {
+  AudioEndedHandler();
+}

@@ -52,6 +52,8 @@ function initState () {
 
         control: document.getElementById('host-control'),
         controller: document.getElementById('host-control-input'),
+
+        skip: document.getElementById('skippy-dippy-doo'),
       },
     },
   };
@@ -141,10 +143,11 @@ function host_swappado (to) {
 
     get('render.host.swappyIcon').classList.toggle('fa-calculator', false);
     get('render.host.swappyIcon').classList.toggle('fa-music', true);
+
+    get('render.host.controller').focus();
   } else if (to == 'songInfo') {
     old = get('render.host.control');
     yung = get('render.host.songInfo');
-
 
     get('render.host.swappyIcon').classList.toggle('fa-calculator', true);
     get('render.host.swappyIcon').classList.toggle('fa-music', false);

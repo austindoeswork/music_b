@@ -31,20 +31,40 @@ function AudioEndedHandler () {
   const button = get('render.host.button');
   if (get('play.queue').length == 0 ) {
     button.src = 'img/sad.png';
+    get('render.host.skip').classList.toggle('hidden', true);
     set('play.currentSongname', 'No songs in queue :[');
     set('play.loading', true);
   } else {
     const source = get('render.host.source');
-    const srcUrl = get('play.queue').shift();
+
+    let currentSong = get('play.queue').shift();
+    const srcUrl = PROTOCOL + '://' + FULL_URL + '/song/' + currentSong.id;
 
     if (typeof srcUrl != 'undefined') {
       source.src = srcUrl;
       audio.load();
       playAudio();
+      nextSong();
 
-      // set('play.currentSongname', 'buffering, hold your horses')
+      set('play.currentSongname', currentSong.query);
+      get('render.host.skip').classList.toggle('hidden', false);
+
     }
   }
 
   get('render.host.songName').innerHTML = get('play.currentSongname');
 }
+
+
+function OnBodyResize () {
+  const canvas = get('render.host.canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+// function OnPageLeave() {
+//   console.log("out");
+//   localStorage.setItem("roomname", mbInfo.roomName);
+//   localStorage.setItem("id", mbInfo.id);
+//   localStorage.setItem("timestamp", Date.now());
+// }

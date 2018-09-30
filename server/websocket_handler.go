@@ -97,7 +97,7 @@ func handleWebsocketMessage(msg []byte, conn *websocket.Conn, party *cache.Party
 	}
 
 	conn.WriteJSON(WebsocketSongsOutput{
-		Type: "songs",
+		Type: "queue",
 		Body: party.Songs(),
 	})
 }

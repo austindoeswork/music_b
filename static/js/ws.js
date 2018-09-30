@@ -2,9 +2,9 @@
 
 // init
 function initWs (url, port, name, cb) {
-  if (window.location.protocol == 'http:') {
+  if (PROTOCOL == 'http') {
     url = 'ws://' + url;
-  } else if (window.location.protocol == 'https:') {
+  } else if (PROTOCOL == 'https') {
     url = 'wss://' + url;
   }
 
@@ -21,8 +21,6 @@ function initWs (url, port, name, cb) {
     get('render.host.partyName').innerHTML = `you're hosting "${get('room.name')}"`;
 
     BodyReadyHandler();
-
-    requestSong('all star');
   };
 
   ws.onmessage = function(e) {
@@ -49,7 +47,7 @@ function parseResponse (r) {
   res = JSON.parse(r);
 
   if (res.type == 'queue') {
-    set('play.queue', res.Body);
+    set('play.queue', res.body);
     if (get('play.loading')) {
       AudioEndedHandler();
     }

@@ -48,7 +48,6 @@ function AudioEndedHandler () {
 
       set('play.currentSongname', currentSong.query);
       get('render.host.skip').classList.toggle('hidden', false);
-
     }
   }
 

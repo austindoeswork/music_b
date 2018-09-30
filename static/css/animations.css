@@ -40,3 +40,18 @@
     opacity: 0;
   }
 }
+
+@keyframes mypeopleneedme {
+  0% {
+    opacity: 1;
+    bottom: 1vh;
+  }
+  50% {
+    opacity: 1;
+    bottom: 5vh;
+  }
+  100% {
+    opacity: 0;
+    bottom: 10vh;
+  }
+}

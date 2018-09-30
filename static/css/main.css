@@ -8,7 +8,7 @@
   --durple: #5348C2; /* dark purple */
   --red:    #EE1111;
   --pink:   #F268A2;
-  --green:  #68F2B8;
+  --green:  #40CC4E;
   --blue:   #1111EE;
   --orange: #F39500;
 
@@ -135,6 +135,21 @@ div.page.hidden {
 .rotatedOut {
   opacity: 0;
 
-  animation-duration: 0.25s;
   animation-name: rotato;
+  animation-duration: 0.25s;
+}
+
+.addedSong {
+  position: fixed;
+  width: 100%;
+  left: 0;
+  text-align: center;
+  font-size: 3vmin;
+  bottom: 10px;
+  opacity: 1;
+
+  color: var(--green);
+
+  animation-name: mypeopleneedme;
+  animation-duration: 1s;
 }

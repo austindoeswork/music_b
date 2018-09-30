@@ -20,6 +20,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.0.52/wavesurfer.min.js"></script>
     <script src="https://use.fontawesome.com/0f92278437.js"></script>
 
+    <script src="js/config.js"></script>
     <script src="js/state.js"></script>
     <script src="js/waveform.js"></script>
     <script src="js/audio.js"></script>
@@ -33,22 +34,30 @@
       // Set up the app state / references to various html elements
       function init () {
         initState();
-        initWs('127.0.0.1', '8100');
 
         //TODO: attempt to reconnect
       }
 
       function tryCreateRoom () {
         const roomName = get('render.home.input').value;
-        console.log(roomName);
+        set('room.name', roomName);
 
-        window.history.pushState(null, 'music_b', '#/host/' + roomName);
-        changePage(window.location.hash);
+        initWs(URL, PORT, roomName);
       }
 
       function queueSong () {
-        const query = get('render.host.controller').value;
+        const trolo = get('render.host.controller')
+        const query = trolo.value;
+        trolo.value = '';
         requestSong(query);
+
+
+        const el = document.createElement('P');
+        el.classList.toggle('addedSong', true);
+        el.innerHTML = 'adding ' + query;
+
+        document.body.appendChild(el);
+        setTimeout((function (el) {document.body.removeChild(el)}).bind(this, el), 1000);
       }
     </script>
   </head>
@@ -97,7 +106,7 @@
         ></i>
 
         <span id="host-song-info">
-          <p id="host-partyName">connecting to server...</p>
+          <p id="host-partyName">you're hosting "a party"</p>
           <p id="host-songName">welcome to music_b</p>
         </span>
 
@@ -108,7 +117,7 @@
             placeholder="add a song to the queue"
             onkeydown="if (event.key == 'Enter') { queueSong(); }"
           >
-          <i class="fa fa-arrow-right" aria-hidden="true"></i>
+          <i class="fa fa-arrow-right" aria-hidden="true" onclick="queueSong();"></i>
         </span>
       </span>
     </div>

@@ -1,93 +1,18 @@
-function OnSongNameChange() {
-  document.getElementById("songName").innerHTML = currentSongname;
-}
+function BodyReadyHandler () {
+  window.history.pushState(null, 'music_b', '#/host/' + get('room.name'));
+  changePage(window.location.hash);
 
-function ButtonClickHandler() {
-  var button = document.getElementById("playButton");
+  const audio = document.getElementById('audio');
+  audio.addEventListener('ended', AudioEndedHandler);
+  window.setTimeout(function(){get('render.host.audio').play();}, 700);
 
-  if (button.src.includes("pause")) {
-    pauseAudio();
-  } else if (button.src.includes("play")) {
-    playAudio();
-  }
-}
-
-function AudioLoadedHandler() {
-  audioLoading = false;
-}
-
-function checkQueueReady() {
-  if (get('play.queue').length > 0) {
-    AudioEndedHandler();
-  } else {
-    getQueueLength();
-    if (qLength == "0") {
-      var button = document.getElementById("playButton");
-      button.src = "img/sad.png";
-      currentSongname = "No songs in queue :[";
-      OnSongNameChange();
-      requestSong();
-    } else {
-      var button = document.getElementById("playButton");
-      button.src = "img/elip.png";
-      currentSongname = "buffering, hold your horses";
-      OnSongNameChange();
-      nextSong();
-    }
-    window.setTimeout(checkQueueReady, 1000);
-  }
-}
-
-function AudioEndedHandler() {
-  audioLoading = true;
-
-  var audio = document.getElementById("audio");
-  audio.pause();
-
-  if (get('play.queue.length').length == 0 ) {
-    getQueueLength();
-    if (get('play.qLength') == "0") {
-      var button = document.getElementById("playButton");
-      button.src = "img/sad.png";
-      set('play.currentSongname', "No songs in queue :[");
-      OnSongNameChange();
-    } else {
-      var button = document.getElementById("playButton");
-      button.src = "img/elip.png";
-      set('play.currentSongname', "buffering, hold your horses")
-      OnSongNameChange();
-    }
-
-    checkQueueReady();
-    return;
-  }
-
-  gotFirst = true; // only care about the first time this is set
-
-  var source = document.getElementById("source");
-  var srcUrl = get('play.queue').shift();
-
-  var temp = srcUrl.split("/");
-  var ytid = temp[temp.length-1];
-  getNameFromId(ytid);
-
-  source.src = srcUrl;
-  audio.load();
-  playAudio();
-}
-
-function BodyReadyHandler() {
-  var audio = document.getElementById("audio");
-  audio.addEventListener("ended", AudioEndedHandler);
-  window.setTimeout(function(){document.getElementById("audio").play();}, 700);
-
-  var canvas = document.getElementById("canvas");
+  const canvas = get('render.host.canvas');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  var source = audioCtx.createMediaElementSource(audio);
-  var analyser = audioCtx.createAnalyser();
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const source = audioCtx.createMediaElementSource(audio);
+  const analyser = audioCtx.createAnalyser();
   source.connect(analyser);
   analyser.connect(audioCtx.destination);
   analyser.fftSize = 2048;
@@ -95,74 +20,31 @@ function BodyReadyHandler() {
   draw(analyser);
 }
 
-function CheckRoomJoin(depth) {
-   if (createSuccess) {
-    document.getElementById("createpage").style.display = 'none';
-    document.getElementById("loading").style.display = 'none';
-    document.getElementById("playerpage").style.display = 'block';
+function AudioLoadedHandler () {
+  // this.AudioEndedHandler();
+}
 
-    document.getElementById("playButton").style.webkitAnimationPlayState = 'running';
-    document.getElementById("title").style.webkitAnimationPlayState = 'running';
-    document.getElementById("canvas").style.webkitAnimationPlayState = 'running';
+function AudioEndedHandler () {
+  const audio = get('render.host.audio');
+  audio.pause();
 
-    BodyReadyHandler();
-    requestSong();
-  } else if (depth > 0) {
-    window.setTimeout(function(){CheckRoomJoin(depth-1);}, 200);
+  const button = get('render.host.button');
+  if (get('play.queue').length == 0 ) {
+    button.src = 'img/sad.png';
+    set('play.currentSongname', 'No songs in queue :[');
+    set('play.loading', true);
   } else {
-    if (localStorage.getItem("timestamp") != null) {
-      localStorage.clear();
-    } else {
-      window.location = "?fail";
+    const source = get('render.host.source');
+    const srcUrl = get('play.queue').shift();
+
+    if (typeof srcUrl != 'undefined') {
+      source.src = srcUrl;
+      audio.load();
+      playAudio();
+
+      // set('play.currentSongname', 'buffering, hold your horses')
     }
   }
-}
 
-function TryCreatingRoom() {
-  var roomname = document.getElementById("partyNameInput").value;
-  mbInfo.roomName = roomname;
-  mbInfo.id = roomname
-  createWS("austindoes.work/ws", "")
-
-
-  ws.onopen = function(e) {
-    ws.onmessage = function(e) {
-      parseResponse(e.data);
-    }
-
-    createRoom();
-    CheckRoomJoin(5);
-  }
-}
-
-function OnBodyResize() {
-  var canvas = document.getElementById("canvas");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-
-function OnPageLeave() {
-  console.log("out");
-  localStorage.setItem("roomname", mbInfo.roomName);
-  localStorage.setItem("id", mbInfo.id);
-  localStorage.setItem("timestamp", Date.now());
-}
-
-function OnReconnect() {
-  createWS("austindoes.work/ws", "");
-
-  ws.onopen = function(e) {
-    ws.onmessage = function(e) {
-      parseResponse(e.data);
-    }
-
-    rejoinRoom();
-    CheckRoomJoin(5);
-  }
-}
-function OnCloseParty() {
-  localStorage.clear();
-  mbInfo = {};
-  window.location = "play.html";
-  closeParty();
+  get('render.host.songName').innerHTML = get('play.currentSongname');
 }

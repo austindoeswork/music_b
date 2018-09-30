@@ -20,7 +20,7 @@ function initState () {
     roomName: null,
     play: {
       queue: [],
-      audioLoading: false,
+      loading: true,
       currentSongname: null,
     },
     ws: null,
@@ -39,8 +39,8 @@ function initState () {
         mode: 'songInfo',
         el: document.getElementById('host'),
         title: document.getElementById('host-title'),
-        loading: document.getElementById('play-loading'),
         audio: document.getElementById('audio'),
+        source: document.getElementById('source'),
         canvas: document.getElementById('canvas'),
         button: document.getElementById('playButton'),
 

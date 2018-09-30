@@ -2,9 +2,9 @@
 
 // init
 function initWs (url, port, name, cb) {
-  if (window.location.protocol == 'http:') {
+  if (PROTOCOL == 'http') {
     url = 'ws://' + url;
-  } else if (window.location.protocol == 'https:') {
+  } else if (PROTOCOL == 'https') {
     url = 'wss://' + url;
   }
 

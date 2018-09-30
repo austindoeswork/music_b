@@ -35,14 +35,16 @@ function AudioEndedHandler () {
     set('play.loading', true);
   } else {
     const source = get('render.host.source');
-    const srcUrl = get('play.queue').shift();
+
+    let currentSong = get('play.queue').shift();
+    const srcUrl = PROTOCOL + '://' + URL + '/song/' + currentSong.id;
 
     if (typeof srcUrl != 'undefined') {
       source.src = srcUrl;
       audio.load();
       playAudio();
 
-      // set('play.currentSongname', 'buffering, hold your horses')
+      set('play.currentSongname', currentSong.query);
     }
   }
 

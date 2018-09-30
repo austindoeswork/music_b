@@ -1,0 +1,53 @@
+<!DOCTYPE html >
+<html lang="en">
+  <head>
+
+    <style>
+      body {
+        display: flex;
+        flex-flow: column nowrap;
+      }
+
+      input {
+        margin-bottom: 25px;
+        font-size: 18px;
+      }
+    </style>
+
+    <script type="text/javascript">
+      var ws = new WebSocket('wss://localhost/ws?name=test');
+      ws.onmessage = function (event) {
+	    console.log(event);
+	  }
+
+      function updateUrl (url) {
+        ws = new WebSocket(url);
+	    ws.onmessage = function (event) {
+	      console.log(event);
+		}
+      }
+
+      function sendws (msg) {
+        ws.send(msg);
+      }
+
+    </script>
+  </head>
+
+  <body>
+    <input
+      type="text"
+      placeholder="wss://localhost/ws?name=test"
+      onkeydown="if (event.key == 'Enter') { updateUrl(event.target.value); }"
+    >
+
+    <input
+      type="text"
+      placeholder="send a message"
+      onkeydown="if (event.key == 'Enter') { sendws(event.target.value); }"
+    >
+
+	<div id="output">
+	</div>
+  </body>
+</html>
